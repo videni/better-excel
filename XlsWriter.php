@@ -184,6 +184,7 @@ class XlsWriter
     {
         $underlineStyles = [
             'single' => Format::UNDERLINE_SINGLE,
+            // Actually , this const does not exist
             // 'double' => Format::UNDERLINE_DOUBLE,
             'single_accounting' => Format::UNDERLINE_SINGLE_ACCOUNTING,
             'double_accounting' => Format::UNDERLINE_DOUBLE_ACCOUNTING,

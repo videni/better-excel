@@ -11,5 +11,13 @@
     },
     "require-dev": {
         "phpspec/phpspec": "^7.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\BetterExcel\\": "Modules/BetterExcel/"
+        },
+        "files": [
+            "helpers.php"
+        ]
     }
 }

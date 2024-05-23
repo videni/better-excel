@@ -25,7 +25,7 @@ class BetterExcelSpec extends ObjectBehavior
         $this->shouldHaveType(BetterExcel::class);
     }
 
-    function it_allows_to_sets_header_via_array()
+    function it_exports_to_excel()
     {
         $headers = [
             'id' => [
