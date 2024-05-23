@@ -55,6 +55,6 @@ class BetterExcelSpec extends ObjectBehavior
 
         $this->setHeader($headers);
 
-        $this->export('test.xls');
+        $this->export('test.xls')->shouldBeEqualTo(__DIR__ . '/test.xls');
     }
 }

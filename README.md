@@ -7,25 +7,26 @@ Export to Excel quickly, easily, naturally！
 
 ```php
 
+
 // 1. 定义表格头
 $columns = [
     'id' => [
         'label' => 'ID',
         // 以 Fluent Style API设置表头样式。
-        'style' =>  (new Style())->italic()->underline()->font('red', 12)->align('center'),
+        'style' =>  (new Style())->bold()->underline()->font('red', 12)->align('center'),
     ],
     'first_name' => [
         'label' => 'Name',
         //  以数组的形式设置表头样式。
         'style' => [
             'font' => [
-                'style' => ['italic', 'bold'],
+                'styles' => ['italic', 'bold'],
                 'size' => 12,
                 'name' => 'Arial',
             ],
             'underline' => 'single',
             'alignment' => [
-                // 'horizontal' => 'center',
+                'horizontal' => 'center',
                 'vertical' => 'center',
             ],
         ]
