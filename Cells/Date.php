@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\BetterExcel\Cell;
+namespace Modules\BetterExcel\Cells;
 
 use Carbon\Carbon;
 use Modules\BetterExcel\Style;

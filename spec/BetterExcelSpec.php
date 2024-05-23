@@ -4,7 +4,7 @@ namespace spec\Modules\BetterExcel;
 
 use Modules\BetterExcel\BetterExcel;
 use Modules\BetterExcel\Style;
-use Modules\BetterExcel\Cell\Date;
+use Modules\BetterExcel\Cells\Date;
 use PhpSpec\ObjectBehavior;
 use Carbon\Carbon;
 

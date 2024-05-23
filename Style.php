@@ -309,7 +309,7 @@ class Style
             });
         $self->getFormatFromArray($formats, self::PATH_ALIGN, None::create())
             ->forAll(function($value) use ($self){
-                $ $self->align($value['horizontal']??null, $value['vertical']??null);
+                $self->align($value['horizontal']??null, $value['vertical']??null);
             });
         $self->getFormatFromArray($formats, self::PATH_BORDER, None::create())
             ->forAll(function($value) use ($self){

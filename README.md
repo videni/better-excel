@@ -5,6 +5,12 @@ Export to Excel quickly, simply, naturally!
 ## 使用方法
 
 ```php
+<?php
+
+use Modules\BetterExcel\BetterExcel;
+use Modules\BetterExcel\Style;
+use Modules\BetterExcel\Cells\Date;
+use Carbon\Carbon;
 
 // 1. 定义表格头
 $columns = [
@@ -42,7 +48,7 @@ $columns = [
 
 # 2. 假设，用 Generator加载大量数据
 $list = function() {
-    // The born_at column show you how to export datetime.
+    // The born_at column shows you how to export datetime.
     yield [ 'id' => 1, 'first_name' => 'Jane', 'last_name' => 'Doe', 'born_at' => Date::fromTimeStamp(time())];
     yield [ 'id' => 2, 'first_name' => 'John', 'last_name' => 'Doe', 'born_at' => Date::fromCarbon(Carbon::now())];
 };
@@ -55,6 +61,10 @@ $betterExcel->setHeader($columns);
 # 3. 导出为 excel
 echo $betterExcel->export('test.xls');
 ```
+
+It outputs something like below
+
+![alt text](./docs/image.png)
 
 # 已知局限性
 
