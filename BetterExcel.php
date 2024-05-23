@@ -121,7 +121,7 @@ class BetterExcel
 
             if (is_object($value) && method_exists($value, 'render')) {
                 $value = $value->render($writer, $rowIndex, $columnIndex, $column);
-                // If None, it means you are responsible to render this cell yourself
+                // If its "None" option, it means you are responsible to render this cell yourself
                 if ($value instanceof Option) {
                    $value->forAll(function($v) use (&$newRow, $column){
                        $newRow[$column->getCode()] = $v;

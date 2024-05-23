@@ -3,9 +3,6 @@
 namespace Modules\BetterExcel\Cells;
 
 use GuzzleHttp\Client;
-use Modules\File\Models\File;
-use Modules\File\Repositories\Interfaces\IFileRepository;
-use Illuminate\Support\Facades\Log;
 use Modules\BetterExcel\XlsWriter;
 use Modules\BetterExcel\Column;
 use Modules\BetterExcel\Style;
@@ -23,44 +20,12 @@ class EmbedImage
     {
         $this->url = $url;
         $this->style = $style ?? (new Style())->align('center', 'center');
-        $this->title = $title ?? "查看原图";
+        $this->title = $title ?? "View original image";
     }
 
-    /**
-     *  A factory method to create an ExcelEmbedImage instance from the File model
-     *
-     * @param File $file
-     * @param int $row
-     * @param int $column
-     * @return self
-     */
-    public static function fromFileModel(
-        File $file,
-        Style $style =null,
-        $title = null
-    ): self {
-        $url = !empty($file->path)? self::toAbsoluteOssUrl($file->path) : $file->raw_url;
-
-        return new static($url, $style, $title);
-    }
-
-    public static function fromFullImageUrl(string $imgUrl, Style $style =null, $title = null)
+    public static function fromImageUrl(string $imgUrl, Style $style =null, $title = null)
     {
         return new static($imgUrl, $style, $title);
-    }
-
-    public static function fromFileRawUrl(string $imgUrl, Style $style =null, $title = null)
-    {
-        $file = app(IFileRepository::class)->getFileByRawUrl($imgUrl);
-
-        return $file ? static::fromFileModel($file, $style, $title): null;
-    }
-
-    public static function fromFileId(int $fileId, Style $style =null, $title = null)
-    {
-        $file = app(IFileRepository::class)->find($fileId);
-
-        return $file ? static::fromFileModel($file, $style, $title): null;
     }
 
     public function render($writer, $rowIndex, $columnIndex, Column $column)
@@ -71,24 +36,16 @@ class EmbedImage
             $rowIndex,
             $columnIndex,
             $this->url,
-            $this->title
+            $this->title,
+            null,
+            $writer->formatStyle((new Style())->align('center', 'bottom'))
         );
 
         try {
-            $isOnCDN = $this->isImageOnAliOSS($this->url);
             $url = $this->url;
-            if ($isOnCDN) {
-                $url = $this->append100x100ThumbnailQuery($url);
-            }
-
             $localPath = $this->downloadImageToTmpDir($url);
-            if (!$isOnCDN) {
-                $localPath = $this->convertTo100x100ThumbnailImageLocally($localPath);
-            }
-
+            $localPath = $this->convertTo100x100ThumbnailImageLocally($localPath);
         } catch(\Exception $e) {
-            Log::info("Failed to process image from $this->url: " . $e->getMessage());
-
             return null;
         }
 
@@ -106,29 +63,6 @@ class EmbedImage
             );
     }
 
-    public function isImageOnAliOSS($url)
-    {
-        $domains = config("import.order.cdn_domains");
-
-        foreach($domains as $domain) {
-            if (strpos($url, $domain) !== false) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public static function toAbsoluteOssUrl($path)
-    {
-        return config("filesystems.disks.oss")["ossHost"] . "/" . $path;
-    }
-
-    private function append100x100ThumbnailQuery($url)
-    {
-        return $url . "?x-oss-process=image/resize,h_100,w_100/format,png";
-    }
-
     /**
      * @return string | \Exception
      */
@@ -139,6 +73,7 @@ class EmbedImage
             return $tempPath;
         }
 
+        // TODO: Refactor this object according to flyweight pattern
         $client = new Client();
         $client->get($imgUrl, ["sink" => $tempPath]);
 
@@ -152,6 +87,7 @@ class EmbedImage
             return $outputFile;
         }
 
+        // TODO: Refactor this object according to flyweight pattern
         $image = new \Imagick();
 
         $image->readImage($imagePath);

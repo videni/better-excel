@@ -98,40 +98,38 @@ trait XlsWriterFormatConstantsTrait
 
     private function createFormatter()
     {
-        return function($path) {
-            $formats = [
-                Style::PATH_FONT_COLOR => function($value, $format) {
-                    if (is_string($value)) {
-                        // default to back if color not supported
-                        $format->fontColor($this->toColorConstant($value));
-                    }
-                },
-                Style::PATH_FONT_SIZE => fn($value, $format) => $format->fontSize($value),
-                Style::PATH_FONT_NAME => fn($value, $format) => $format->font($value),
-                Style::PATH_FONT_STYLES => function($styles, $format){
-                    foreach ($styles as $style) {
-                        $format->{strtolower($style)}();
-                    }
-                },
-                Style::PATH_ALIGN => function($value, $format){
-                    [$horizontal, $vertical] = $value;
+        $formats = [
+            Style::PATH_FONT_COLOR => function($value, $format) {
+                // default to back if color not supported
+                $format->fontColor(is_string($value)? $this->toColorConstant($value): $value);
+            },
+            Style::PATH_FONT_SIZE => fn($value, $format) => $format->fontSize($value),
+            Style::PATH_FONT_NAME => fn($value, $format) => $format->font($value),
+            Style::PATH_FONT_STYLES => function($styles, $format){
+                foreach ($styles as $style) {
+                    $format->{strtolower($style)}();
+                }
+            },
+            Style::PATH_ALIGN => function($value, $format){
+                [$horizontal, $vertical] = $value;
 
-                    $format->align(
-                        $this->toHorizontalAlignmentConstant($horizontal),
-                        $this->toVerticalAlignmentConstant($vertical)
-                    );
-                },
-                Style::PATH_UNDERLINE => fn($value, $format) => $format->underline($this->toUnderlineConstant($value)),
-                Style::PATH_WRAP => fn($value, $format) => $value && $format->wrap(),
-                Style::PATH_BORDER => fn($value, $format) => $format->border($this->toBorderConstant($value)) ,
-                Style::PATH_NUMBER => function($value, $format){
-                    $format->number($value);
-                },
-                Style::PATH_BACKGROUND => function($value, $format){
-                    $format->background($this->toColorConstant($value));
-                },
-            ];
+                $format->align(
+                    $this->toHorizontalAlignmentConstant($horizontal),
+                    $this->toVerticalAlignmentConstant($vertical)
+                );
+            },
+            Style::PATH_UNDERLINE => fn($value, $format) => $format->underline($this->toUnderlineConstant($value)),
+            Style::PATH_WRAP => fn($value, $format) => $value && $format->wrap(),
+            Style::PATH_BORDER => fn($value, $format) => $format->border($this->toBorderConstant($value)) ,
+            Style::PATH_NUMBER => function($value, $format){
+                $format->number($value);
+            },
+            Style::PATH_BACKGROUND => function($value, $format){
+                $format->background($this->toColorConstant($value));
+            },
+        ];
 
+        return function($path) use($formats) {
             return $formats[$path];
         };
     }
