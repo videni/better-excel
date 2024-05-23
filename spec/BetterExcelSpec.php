@@ -4,15 +4,17 @@ namespace spec\Modules\BetterExcel;
 
 use Modules\BetterExcel\BetterExcel;
 use Modules\BetterExcel\Style;
+use Modules\BetterExcel\Cell\Date;
 use PhpSpec\ObjectBehavior;
+use Carbon\Carbon;
 
 class BetterExcelSpec extends ObjectBehavior
 {
     function let()
     {
         $list = function() {
-            yield [ 'id' => 1, 'first_name' => 'Jane', 'last_name' => 'Doe' ];
-            yield [ 'id' => 2, 'first_name' => 'John', 'last_name' => 'Doe'];
+            yield [ 'id' => 1, 'first_name' => 'Jane', 'last_name' => 'Doe', 'born_at' => Date::fromTimeStamp(time())];
+            yield [ 'id' => 2, 'first_name' => 'John', 'last_name' => 'Doe', 'born_at' => Date::fromCarbon(Carbon::now())];
         };
 
         $this->beConstructedWith($list());
@@ -50,6 +52,12 @@ class BetterExcelSpec extends ObjectBehavior
             'last_name' => [
                 'label' => 'Last Name',
                 'style' =>  (new Style())->italic()->underline('double')->font('cyan', 12)->align('center')->border(null),
+            ],
+            'born_at' => [
+                'label' => 'Born At',
+                'style' =>  (new Style())->italic()->underline('double')
+                    ->font('purple', 12)->align('center', 'center')->border(null)
+                    ->width(20),
             ],
         ];
 

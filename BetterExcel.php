@@ -6,6 +6,7 @@ use Generator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use PhpOption\None;
+use PhpOption\Option;
 
 class BetterExcel
 {
@@ -87,8 +88,10 @@ class BetterExcel
      */
     private function writeRows($writer, array|Generator|Collection $data, ?callable $callback = null)
     {
-        foreach($data as $index => $row) {
-            $row = $this->transformRow($writer, $row, $index, $callback);
+        foreach($data as $rowIndex => $row) {
+            $rowIndex  = $this->withHeader? $rowIndex + 1: $rowIndex;
+
+            $row = $this->transformRow($writer, $row, $rowIndex, $callback);
 
             $writer->writeOneRow($row);
         }
@@ -108,19 +111,23 @@ class BetterExcel
         }
 
         $newRow = [];
-        foreach($columns as $column) {
+        foreach($columns as $columnIndex => $column) {
             $value = null;
             if (\is_callable($column->getPath())) {
-                $value = $column->getPath()($row, $column, $rowIndex);
+                $value = $column->getPath()($row, $column, $rowIndex, $columnIndex);
             } else {
                 $value = data_get($row, $column->getPath());
             }
 
             if (is_object($value) && method_exists($value, 'render')) {
-                $value = $value->render($writer, $column, $rowIndex);
+                $value = $value->render($writer, $rowIndex, $columnIndex, $column);
                 // If None, it means you are responsible to render this cell yourself
-                if ($value instanceof None) {
-                    continue;
+                if ($value instanceof Option) {
+                   $value->forAll(function($v) use (&$newRow, $column){
+                       $newRow[$column->getCode()] = $v;
+                   });
+
+                   continue;
                 }
             }
 

@@ -51,6 +51,9 @@ class Style
     public const PATH_HEIGHT = 'height';
     public const PATH_UNDERLINE = 'underline';
 
+    private $width;
+    private $height;
+
     private $formats = [];
 
     public function __construct()
@@ -234,7 +237,7 @@ class Style
      */
     public function width(int $width)
     {
-        $this->setFormat(self::PATH_WIDTH, $width);
+        $this->width = $width;
 
         return $this;
     }
@@ -247,14 +250,19 @@ class Style
      */
     public function height(int $height)
     {
-        $this->setFormat(self::PATH_HEIGHT, $height);
+        $this->height = $height;
 
         return $this;
     }
 
     public function getWidth()
     {
-        return $this->formats[self::PATH_WIDTH]??null;
+        return $this->width;
+    }
+
+    public function getHeight()
+    {
+        return $this->height;
     }
 
     private function setFormat(string $field, $value, $multiple = false)

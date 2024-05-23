@@ -1,5 +1,4 @@
-BetterExcel
-==========
+# BetterExcel
 
 Export to Excel quickly, simply, naturally!
 
@@ -33,12 +32,19 @@ $columns = [
         'label' => 'Last Name',
         'style' =>  (new Style())->italic()->underline()->font('cyan', 12)->align('center'),
     ],
+    'born_at' => [
+        'label' => 'Born At',
+        'style' =>  (new Style())->italic()
+            ->font('purple', 12)->align('center', 'center')
+            ->width(20),
+    ],
 ];
 
 # 2. 假设，用 Generator加载大量数据
 $list = function() {
-    yield [ 'id' => 1, 'first_name' => 'Jane', 'last_name' => 'Doe' ];
-    yield [ 'id' => 2, 'first_name' => 'John', 'last_name' => 'Doe'];
+    // The born_at column show you how to export datetime.
+    yield [ 'id' => 1, 'first_name' => 'Jane', 'last_name' => 'Doe', 'born_at' => Date::fromTimeStamp(time())];
+    yield [ 'id' => 2, 'first_name' => 'John', 'last_name' => 'Doe', 'born_at' => Date::fromCarbon(Carbon::now())];
 };
 
 $betterExcel = new BetterExcel($list(), [
@@ -52,8 +58,7 @@ echo $betterExcel->export('test.xls');
 
 # 已知局限性
 
-* 未支持多个sheet。
-
+-   未支持多个 sheet。
 
 # 测试
 
