@@ -85,7 +85,7 @@ class BetterExcel
     private function writeRows($writer, array|Generator|Collection $data, ?callable $callback = null)
     {
         foreach($data as $index => $row) {
-            $row = $this->transform($writer, $row, $index, $callback);
+            $row = $this->transformRow($writer, $row, $index, $callback);
 
             $writer->writeOneRow($row);
         }
@@ -96,7 +96,7 @@ class BetterExcel
         $writer->writeHeader($headers);
     }
 
-    private function transform($writer, $row, $rowIndex, $callback = null)
+    private function transformRow($writer, $row, $rowIndex, $callback = null)
     {
         $columns = $this->getHeader();
 

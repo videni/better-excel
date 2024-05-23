@@ -7,7 +7,6 @@ Export to Excel quickly, easily, naturally！
 
 ```php
 
-
 // 1. 定义表格头
 $columns = [
     'id' => [
@@ -22,7 +21,6 @@ $columns = [
             'font' => [
                 'styles' => ['italic', 'bold'],
                 'size' => 12,
-                'name' => 'Arial',
             ],
             'underline' => 'single',
             'alignment' => [
@@ -33,7 +31,7 @@ $columns = [
     ],
     'last_name' => [
         'label' => 'Last Name',
-        'style' =>  (new Style())->italic()->underline('double')->font('cyan', 12)->align('center'),
+        'style' =>  (new Style())->italic()->underline('double')->font('cyan', 12)->align('center')->border(null),
     ],
 ];
 
@@ -52,7 +50,7 @@ echo $betterExcel->export('test.xls');
 
 # 已知局限性
 
-   未支持多个 sheet。
+* 未支持多个sheet。
 
 
 # 测试

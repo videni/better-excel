@@ -49,7 +49,7 @@ class BetterExcelSpec extends ObjectBehavior
             ],
             'last_name' => [
                 'label' => 'Last Name',
-                'style' =>  (new Style())->italic()->underline('double')->font('cyan', 12)->align('center'),
+                'style' =>  (new Style())->italic()->underline('double')->font('cyan', 12)->align('center')->border(null),
             ],
         ];
 
