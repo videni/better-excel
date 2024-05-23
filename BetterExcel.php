@@ -5,6 +5,7 @@ namespace Modules\BetterExcel;
 use Generator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use PhpOption\None;
 
 class BetterExcel
 {
@@ -117,6 +118,10 @@ class BetterExcel
 
             if (is_object($value) && method_exists($value, 'render')) {
                 $value = $value->render($writer, $column, $rowIndex);
+                // If None, it means you are responsible to render this cell yourself
+                if ($value instanceof None) {
+                    continue;
+                }
             }
 
             $newRow[$column->getCode()] = $value;
