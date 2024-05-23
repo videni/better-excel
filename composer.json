@@ -1,13 +1,14 @@
 {
     "name": "videni/better-excel",
     "type": "library",
-    "description": "Export to Excel quickly, easily, naturally!",
+    "description": "Export to Excel quickly, simply, naturally!",
     "keywords": ["library", "laravel"],
     "license": "MIT",
     "require": {
         "php": "^7.4|^8.0",
         "illuminate/support": "*",
-        "phpoption/phpoption": "^1.9"
+        "phpoption/phpoption": "^1.9",
+        "ext-xlswriter": "*"
     },
     "require-dev": {
         "phpspec/phpspec": "^7.5"

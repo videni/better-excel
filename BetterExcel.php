@@ -21,10 +21,12 @@ class BetterExcel
 
     /**
      * @param array|Generator|Collection|null $data
+     * @param array $options
      */
-    public function __construct(array|Generator|Collection $data = null)
+    public function __construct(array|Generator|Collection $data = null, array $options = [])
     {
         $this->data = $data;
+        $this->options = $options;
     }
 
     public function export(string $filename, callable $callback = null)

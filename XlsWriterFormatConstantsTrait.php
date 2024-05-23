@@ -4,6 +4,9 @@ namespace Modules\BetterExcel;
 
 use Vtiful\Kernel\Format;
 
+/**
+ * Map human readable string to Vtiful\Kernel\Format constants
+ */
 trait XlsWriterFormatConstantsTrait
 {
     protected static $colors = [

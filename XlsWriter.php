@@ -36,7 +36,7 @@ class XlsWriter
             $this->excel->setColumn(
                 $range,
                 $column->getStyle()->getWidth(),
-                $this->format($column->getStyle())
+                $this->formatStyle($column->getStyle())
             );
         }
 
@@ -82,7 +82,7 @@ class XlsWriter
         return $this->excel->{$name}(...$arguments);
     }
 
-    public function format(Style $style)
+    public function formatStyle(Style $style)
     {
         $handle = $this->excel->getHandle();
 

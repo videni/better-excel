@@ -1,7 +1,7 @@
 BetterExcel
 ==========
 
-Export to Excel quickly, easily, naturally！
+Export to Excel quickly, simply, naturally!
 
 ## 使用方法
 
@@ -31,7 +31,7 @@ $columns = [
     ],
     'last_name' => [
         'label' => 'Last Name',
-        'style' =>  (new Style())->italic()->underline('double')->font('cyan', 12)->align('center')->border(null),
+        'style' =>  (new Style())->italic()->underline()->font('cyan', 12)->align('center'),
     ],
 ];
 
@@ -41,7 +41,9 @@ $list = function() {
     yield [ 'id' => 2, 'first_name' => 'John', 'last_name' => 'Doe'];
 };
 
-$betterExcel = new BetterExcel($list());
+$betterExcel = new BetterExcel($list(), [
+    'path' => __DIR__
+]);
 $betterExcel->setHeader($columns);
 
 # 3. 导出为 excel
