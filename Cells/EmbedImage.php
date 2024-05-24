@@ -10,22 +10,24 @@ use Webmozart\Assert\Assert;
 
 class EmbedImage
 {
-    public const DEFAULT_IMAGE_CELL_HEIGHT = 100;
+    public const DEFAULT_IMAGE_SIZE = 100;
 
     private $url;
     private $title;
     private $style;
+    private $imageSize;
 
-    public function __construct(string $url, Style $style =null, $title = null)
+    public function __construct(string $url, Style $style =null, $title = null, $imageSize = null)
     {
         $this->url = $url;
         $this->style = $style ?? (new Style())->align('center', 'center');
         $this->title = $title ?? "View original image";
+        $this->imageSize = $imageSize ?? self::DEFAULT_IMAGE_SIZE;
     }
 
-    public static function fromImageUrl(string $imgUrl, Style $style =null, $title = null)
+    public static function fromImageUrl(string $imgUrl, $imageSize = null, Style $style =null, $title = null)
     {
-        return new static($imgUrl, $style, $title);
+        return new static($imgUrl, $style, $title, $imageSize);
     }
 
     public function render($writer, $rowIndex, $columnIndex, Column $column)
@@ -44,20 +46,23 @@ class EmbedImage
         try {
             $url = $this->url;
             $localPath = $this->downloadImageToTmpDir($url);
-            $localPath = $this->convertTo100x100ThumbnailImageLocally($localPath);
+            $localPath = $this->convertToThumbnailImageLocally($localPath, $this->imageSize);
         } catch(\Exception $e) {
+            // Don't do anything, at least we have a link in the cell.
             return null;
         }
 
-        $height = self::DEFAULT_IMAGE_CELL_HEIGHT;
-        if ($this->style && $height = $this->style->getWidth()) {
-            $height =  $height;
+        $height = self::DEFAULT_IMAGE_SIZE;
+        if ($this->style && $height = $this->style->getHeight()) {
+            $height = $height;
         }
 
         $writer
             ->insertImage($rowIndex,  $columnIndex, $localPath)
+            // Set the image cell height, the width is set by the header, that is why
+            // I don't set the width here.
             ->setRow(
-                sprintf($column->getColumnIndex(). $rowIndex),
+                sprintf($column->getLetter(). $rowIndex),
                 $height,
                 $this->style ? $writer->formatStyle($this->style): null
             );
@@ -80,27 +85,29 @@ class EmbedImage
         return $tempPath;
     }
 
-    private function convertTo100x100ThumbnailImageLocally($imagePath)
+    private function convertToThumbnailImageLocally($imagePath, $imageSize)
     {
         $outputFile = dirname($imagePath).DIRECTORY_SEPARATOR. md5($imagePath) . '.png';
         if (file_exists($outputFile)) {
             return $outputFile;
         }
 
-        // TODO: Refactor this object according to flyweight pattern
-        $image = new \Imagick();
+        // TODO: Refactor this object according to flyweight pattern,
+        // so this object can be reused  to convert other images.
+        $imagick = new \Imagick();
 
-        $image->readImage($imagePath);
+        $imagick->readImage($imagePath);
 
-        // 调整图像大小到100x100
-        $image->resizeImage(100, 100, \Imagick::FILTER_LANCZOS, 1);
-        $image->setImageFormat('png');
+        $imagick->resizeImage($imageSize, \Imagick::FILTER_LANCZOS, 1);
+        $imagick->setImageFormat('png');
 
-        $image->writeImage($outputFile);
+        $imagick->writeImage($outputFile);
 
-        // 清理
-        $image->clear();
-        $image->destroy();
+        // Clear the resource taken by the image itself,
+        // the $imagick object can be used to process other images.
+        $imagick->clear();
+
+        $imagick->destroy();
 
         return $outputFile;
     }

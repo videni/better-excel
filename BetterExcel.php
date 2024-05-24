@@ -116,7 +116,7 @@ class BetterExcel
         foreach($columns as $columnIndex => $column) {
             $value = null;
             if (\is_callable($column->getPath())) {
-                $value = $column->getPath()($row, $column, $rowIndex, $columnIndex);
+                $value = $column->getPath()($row, $rowIndex, $columnIndex, $column);
             } else {
                 $value = data_get($row, $column->getPath());
             }

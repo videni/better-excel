@@ -20,18 +20,19 @@ class XlsWriter
 
     public function writeHeader(array $header)
     {
-        $predefinedColumns = $this->getPredefinedColumns();
-        $maxColumns = count($predefinedColumns);
+        $columnsLetters = $this->getPredefinedColumnLetters();
+
+        $maxColumns = count($columnsLetters);
         $columnsCount = count($header);
         if ($columnsCount > $maxColumns) {
             throw new \Exception(sprintf('The number of columns exceeds the maximum number(%d) of columns', $maxColumns));
         };
 
-        $mappings = array_combine(array_slice($predefinedColumns, 0, $columnsCount), $header);
+        $mappings = array_combine(array_slice($columnsLetters, 0, $columnsCount), $header);
 
-        foreach ($mappings as $key => $column) {
-            $column->setColumnIndex($key);
-            $range = sprintf('%1$s1:%1$s1', $key);
+        foreach ($mappings as $letter => $column) {
+            $column->setLetter($letter);
+            $range = sprintf('%1$s1:%1$s1', $letter);
 
             $this->excel->setColumn(
                 $range,
@@ -58,7 +59,7 @@ class XlsWriter
         return $this->excel->output();
     }
 
-    private function getPredefinedColumns()
+    private function getPredefinedColumnLetters()
     {
         static $newSortKey = null ;
         if ($newSortKey) {
@@ -91,8 +92,8 @@ class XlsWriter
         return $style->apply(function($formats) use($format){
             $formatter = $this->createFormatter();
 
-            foreach ($formats as $key => $value) {
-                $formatter($key)($value, $format);
+            foreach ($formats as $letter => $value) {
+                $formatter($letter)($value, $format);
             }
 
             return $format->toResource();

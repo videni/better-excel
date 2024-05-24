@@ -8,9 +8,9 @@ class Column
     private $label;
     private $style;
     private $path;
-    private $columnIndex;
+    private $letter;
 
-    public function __construct(string $code, string $label, $path = null, Style $style = null)
+    public function __construct(string $code, string $label, string|\Closure $path = null, Style $style = null)
     {
         $this->code = $code;
         $this->label = $label;
@@ -38,15 +38,23 @@ class Column
         return $this->code;
     }
 
-    public function setColumnIndex($index)
+    public function setLetter($letter)
     {
-        $this->columnIndex = $index;
+        $this->letter = $letter;
 
         return $this;
     }
 
-    public function getColumnIndex()
+    /**
+     *  Get the column index, such as A, B, C, etc.
+     *
+     *  For some methods(setRow) in \Vtiful\Kernel\Excel, the column letter is required instead
+     *  of integer based column index. this method here is to make your life easier.
+     *
+     * @return mixed
+     */
+    public function getLetter()
     {
-        return $this->columnIndex;
+        return $this->letter;
     }
 }

@@ -99,18 +99,18 @@ trait XlsWriterFormatConstantsTrait
     private function createFormatter()
     {
         $formats = [
-            Style::PATH_FONT_COLOR => function($value, $format) {
+            Style::PATH_FONT_COLOR => function($value, Format $format) {
                 // default to back if color not supported
                 $format->fontColor(is_string($value)? $this->toColorConstant($value): $value);
             },
-            Style::PATH_FONT_SIZE => fn($value, $format) => $format->fontSize($value),
-            Style::PATH_FONT_NAME => fn($value, $format) => $format->font($value),
+            Style::PATH_FONT_SIZE => fn($value, Format $format) => $format->fontSize($value),
+            Style::PATH_FONT_NAME => fn($value, Format $format) => $format->font($value),
             Style::PATH_FONT_STYLES => function($styles, $format){
                 foreach ($styles as $style) {
                     $format->{strtolower($style)}();
                 }
             },
-            Style::PATH_ALIGN => function($value, $format){
+            Style::PATH_ALIGN => function($value, Format $format){
                 [$horizontal, $vertical] = $value;
 
                 $format->align(
@@ -118,13 +118,13 @@ trait XlsWriterFormatConstantsTrait
                     $this->toVerticalAlignmentConstant($vertical)
                 );
             },
-            Style::PATH_UNDERLINE => fn($value, $format) => $format->underline($this->toUnderlineConstant($value)),
-            Style::PATH_WRAP => fn($value, $format) => $value && $format->wrap(),
-            Style::PATH_BORDER => fn($value, $format) => $format->border($this->toBorderConstant($value)) ,
-            Style::PATH_NUMBER => function($value, $format){
+            Style::PATH_UNDERLINE => fn($value, Format $format) => $format->underline($this->toUnderlineConstant($value)),
+            Style::PATH_WRAP => fn($value, Format $format) => $value && $format->wrap(),
+            Style::PATH_BORDER => fn($value, Format $format) => $format->border($this->toBorderConstant($value)) ,
+            Style::PATH_NUMBER => function($value, Format $format){
                 $format->number($value);
             },
-            Style::PATH_BACKGROUND => function($value, $format){
+            Style::PATH_BACKGROUND => function($value, Format $format){
                 $format->background($this->toColorConstant($value));
             },
         ];

@@ -98,6 +98,7 @@ class Style
                 );
             }
         }
+
         $this->setFormat(self::PATH_FONT_COLOR, $color);
 
         return $this;
@@ -204,32 +205,13 @@ class Style
         return $this;
     }
 
-    private function assetOption($option, $choices, $hint)
-    {
-        //nullable option is allowed
-        if ($option === null) {
-            return;
-        }
-        $this->throwIfInvalidOption($option, $choices, $hint);
-    }
-
-    private function throwIfInvalidOption($option, array $choices, string $hint)
-    {
-        $option = strtolower($option);
-        if (!in_array($option, $choices)) {
-            throw new \InvalidArgumentException(
-                sprintf('Invalid %s: %s, valid choices are: %s', $hint, $option, join(', ',  $choices))
-            );
-        }
-    }
-
     public function apply(\Closure $callback)
     {
         return $callback($this->formats);
     }
 
     /**
-     * Set column width, it is only needed for column,
+     * Set column width.
      * usually, for column width, it means how many characters can be displayed
      *
      * @param int $width
@@ -243,7 +225,7 @@ class Style
     }
 
     /**
-     * Set row height, it is only needed for row
+     * Set row height.
      *
      * @param int $height
      * @return self
@@ -329,6 +311,25 @@ class Style
             });
 
         return $self;
+    }
+
+    private function assetOption($option, $choices, $hint)
+    {
+        //nullable option is allowed
+        if ($option === null) {
+            return;
+        }
+        $this->throwIfInvalidOption($option, $choices, $hint);
+    }
+
+    private function throwIfInvalidOption($option, array $choices, string $hint)
+    {
+        $option = strtolower($option);
+        if (!in_array($option, $choices)) {
+            throw new \InvalidArgumentException(
+                sprintf('Invalid %s: %s, valid choices are: %s', $hint, $option, join(', ',  $choices))
+            );
+        }
     }
 
     private function getFormatFromArray(array $formats, string $path, $default = null): Option
