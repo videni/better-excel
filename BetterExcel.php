@@ -3,7 +3,7 @@
 namespace Modules\BetterExcel;
 
 use Generator;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Enumerable;
 use Illuminate\Support\Str;
 use PhpOption\None;
 use PhpOption\Option;
@@ -11,7 +11,7 @@ use PhpOption\Option;
 class BetterExcel
 {
     /**
-     * @var Collection|Generator|array
+     * @var Enumerable|Generator|array
      */
     protected $data;
 
@@ -22,10 +22,10 @@ class BetterExcel
     private $options = [];
 
     /**
-     * @param array|Generator|Collection|null $data
+     * @param array|Generator|Enumerable|null $data
      * @param array $options
      */
-    public function __construct(array|Generator|Collection $data = null, array $options = [])
+    public function __construct(array|Generator|Enumerable $data = null, array $options = [])
     {
         $this->data = $data;
         $this->options = $options;
@@ -82,11 +82,11 @@ class BetterExcel
 
     /**
      * @param  $writer
-     * @param array|Generator|Collection $data
+     * @param array|Generator|Enumerable $data
      * @param callable|null $callback
      * @return void
      */
-    private function writeRows($writer, array|Generator|Collection $data, ?callable $callback = null)
+    private function writeRows($writer, array|Generator|Enumerable $data, ?callable $callback = null)
     {
         $delta = count($this->header) > 0 ? 1: 0;
 
