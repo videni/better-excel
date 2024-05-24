@@ -1,6 +1,6 @@
 # BetterExcel
 
-Export to Excel quickly, simply, naturally!
+Export data to Excel quickly, simply, naturally!
 
 ## 使用方法
 
