@@ -88,8 +88,10 @@ class BetterExcel
      */
     private function writeRows($writer, array|Generator|Collection $data, ?callable $callback = null)
     {
-        foreach($data as $rowIndex => $row) {
-            $rowIndex  = $this->withHeader? $rowIndex + 1: $rowIndex;
+        $delta = count($this->header) > 0 ? 1: 0;
+
+        foreach($data as $index => $row) {
+            $rowIndex = $this->withHeader? $index + $delta: $index;
 
             $row = $this->transformRow($writer, $row, $rowIndex, $callback);
 
