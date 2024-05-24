@@ -18,17 +18,17 @@ class XlsWriter
         $this->excel->fileName($filename);
     }
 
-    public function writeHeader(array $header)
+    public function writeHeader(array $columns)
     {
         $columnsLetters = $this->getPredefinedColumnLetters();
 
         $maxColumns = count($columnsLetters);
-        $columnsCount = count($header);
+        $columnsCount = count($columns);
         if ($columnsCount > $maxColumns) {
             throw new \Exception(sprintf('The number of columns exceeds the maximum number(%d) of columns', $maxColumns));
         };
 
-        $mappings = array_combine(array_slice($columnsLetters, 0, $columnsCount), $header);
+        $mappings = array_combine(array_slice($columnsLetters, 0, $columnsCount), $columns);
 
         foreach ($mappings as $letter => $column) {
             $column->setLetter($letter);
@@ -41,7 +41,7 @@ class XlsWriter
             );
         }
 
-        $labels = array_reduce($header, function($carry, $column){
+        $labels = array_reduce($columns, function($carry, $column){
             $carry[] = $column->getLabel();
 
             return $carry;
@@ -61,21 +61,22 @@ class XlsWriter
 
     private function getPredefinedColumnLetters()
     {
-        static $newSortKey = null ;
-        if ($newSortKey) {
-            return $newSortKey;
+        static $columnLetters = null ;
+        if ($columnLetters) {
+            return $columnLetters;
         }
-        $sortKey = [
-            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-        ];
-        $newSortKey = $sortKey;
-        foreach ($sortKey as $item) {
-            foreach ($sortKey as $itemOne) {
-                array_push($newSortKey, $item.$itemOne);
+
+        $letters = range('A', 'Z');
+
+        $columnLetters = [];
+
+        foreach ($letters as $letter1) {
+            foreach ($letters as $letter2) {
+                array_push($columnLetters, $letter1.$letter2);
             }
         }
 
-        return $newSortKey;
+        return $columnLetters;
     }
 
     public function __call($name, $arguments)

@@ -12,44 +12,55 @@ class EmbedImage
 {
     public const DEFAULT_IMAGE_SIZE = 100;
 
-    private $url;
-    private $title;
+    private $path;
     private $style;
     private $imageSize;
 
-    public function __construct(string $url, Style $style =null, $title = null, $imageSize = null)
+    public function __construct(string|\Closure $path, Style $style =null, $imageSize = null)
     {
-        $this->url = $url;
+        $this->path = $path;
         $this->style = $style ?? (new Style())->align('center', 'center');
-        $this->title = $title ?? "View original image";
         $this->imageSize = $imageSize ?? self::DEFAULT_IMAGE_SIZE;
     }
 
-    public static function fromImageUrl(string $imgUrl, $imageSize = null, Style $style =null, $title = null)
+    public static function fromUrl(string $imgUrl, $imageSize = null, Style $style =null, $title = null)
     {
-        return new static($imgUrl, $style, $title, $imageSize);
+        return new static(function($writer, $rowIndex, $columnIndex) use($imgUrl, $title) {
+            $writer->insertUrl(
+                $rowIndex,
+                $columnIndex,
+                $imgUrl,
+                $title ?? "View original image",
+                null,
+                $writer->formatStyle((new Style())->align('center', 'bottom'))
+            );
+
+            try {
+                $localPath = $this->downloadImageToTmpDir($imgUrl);
+                $localPath = $this->convertToThumbnailImageLocally($localPath, $this->imageSize);
+            } catch(\Exception $e) {
+                // Don't do anything, at least we have a link in the cell.
+                return null;
+            }
+
+            return $localPath;
+        }
+        , $style, $title, $imageSize);
+    }
+
+    public function fromPath(string $path, $imageSize = null, Style $style =null)
+    {
+        return new static($path, $style, $imageSize);
     }
 
     public function render($writer, $rowIndex, $columnIndex, Column $column)
     {
         Assert::isInstanceOf($writer, XlsWriter::class);
 
-        $writer->insertUrl(
-            $rowIndex,
-            $columnIndex,
-            $this->url,
-            $this->title,
-            null,
-            $writer->formatStyle((new Style())->align('center', 'bottom'))
-        );
+        $localPath = \is_callable($this->path) ? call_user_func($this->path, [$writer, $rowIndex, $columnIndex]): $this->path;
 
-        try {
-            $url = $this->url;
-            $localPath = $this->downloadImageToTmpDir($url);
-            $localPath = $this->convertToThumbnailImageLocally($localPath, $this->imageSize);
-        } catch(\Exception $e) {
-            // Don't do anything, at least we have a link in the cell.
-            return null;
+        if ($localPath === null || file_exists($localPath) === false) {
+            return;
         }
 
         $height = self::DEFAULT_IMAGE_SIZE;
@@ -98,7 +109,7 @@ class EmbedImage
 
         $imagick->readImage($imagePath);
 
-        $imagick->resizeImage($imageSize, \Imagick::FILTER_LANCZOS, 1);
+        $imagick->resizeImage($imageSize, $imageSize, \Imagick::FILTER_LANCZOS, 1);
         $imagick->setImageFormat('png');
 
         $imagick->writeImage($outputFile);

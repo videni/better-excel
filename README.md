@@ -178,11 +178,13 @@ Style::fromArray(
 
 ### 高级表格单元
 
-除了前面的`path`字段处理单元格的方式，你还可以直接返回一个带`render`方法对象, 这个方法与 `path`的 closure用法完全一模一样。这里格高级单元格，都是通过这中方法实现的。
+除了前面的`path`字段处理单元格的方式，你还可以在数据中直接返回一个带`render`方法对象, 这个方法与 `path`的 closure用法一模一样，唯一的区别是， 第一个参数是 XlsWriter对象，而不是整行数据，你的直觉会告诉你为什么是XlsWriter对象，而不是整行数据。
+
+这里的高级单元格，都是通过这中方法实现的。
 
 #### 图片
 
-在数据中，返回`Modules\BetterExcel\Cells\Date` 对象即可。
+在数据中，返回`Modules\BetterExcel\Cells\EmbedImage` 对象即可。
 
 ```php
 
@@ -192,7 +194,7 @@ Style::fromArray(
 
 #### 日期
 
-在数据中，返回`Modules\BetterExcel\Cells\EmbedImage` 对象即可。
+在数据中，返回`Modules\BetterExcel\Cells\Date` 对象即可。
 
 ```php
 [ 'id' => 1, 'name' => 'Jane', 'born_at' => Date::fromTimeStamp(time())];
