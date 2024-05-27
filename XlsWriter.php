@@ -69,6 +69,7 @@ class XlsWriter
         $letters = range('A', 'Z');
 
         $columnLetters = [];
+        array_push($columnLetters, ...$letters);
 
         foreach ($letters as $letter1) {
             foreach ($letters as $letter2) {

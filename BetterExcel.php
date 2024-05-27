@@ -5,7 +5,6 @@ namespace Modules\BetterExcel;
 use Generator;
 use Illuminate\Support\Enumerable;
 use Illuminate\Support\Str;
-use PhpOption\None;
 use PhpOption\Option;
 
 class BetterExcel
