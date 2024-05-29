@@ -51,13 +51,21 @@ class BetterExcel
         throw new \Exception('Currently only support Excel export');
     }
 
-    public function setHeader($columns = [])
+    public function setHeader(array $columns)
     {
+        $this->header =$this->createHeader($columns);
+    }
+
+    private function createHeader($columns = [])
+    {
+        $results = [];
         foreach($columns as $key => $column) {
             $style = $column['style']??[];
             $style = $style instanceof Style ? $style: Style::fromArray((array)$style);
-            $this->header[] = new Column($key, $column['label']??$key, $column['path']??$key, $style);
+            $results[] = new Column($key, $column['label']??$key, $column['path']??$key, $style);
         }
+
+        return $results;
     }
 
     public function withoutHeader()
@@ -106,7 +114,6 @@ class BetterExcel
     private function transformRow($writer, $row, $rowIndex, $callback = null)
     {
         $columns = $this->getHeader();
-
         if ($callback) {
             $row = $callback($row);
         }
@@ -114,10 +121,11 @@ class BetterExcel
         $newRow = [];
         foreach($columns as $columnIndex => $column) {
             $value = null;
-            if (\is_callable($column->getPath())) {
-                $value = $column->getPath()($row, $rowIndex, $columnIndex, $column);
+            $path = $column->getPath();
+            if (\is_callable($path)) {
+                $value = $path($row, $rowIndex, $columnIndex, $column);
             } else {
-                $value = data_get($row, $column->getPath());
+                $value = data_get($row, $path);
             }
 
             if (is_object($value) && method_exists($value, 'render')) {
