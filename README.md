@@ -119,31 +119,30 @@ $columns = [
 ```
 [ 'id' => 1, 'name' => 'Jane', 'born_at' => Date::fromTimeStamp(time())]
 ```
-如果列与行数据的键不一致，也可以在表头定义中，设置`path`字段， 如
+如果列与行数据的键不一致，也可以在表头定义中，设置`path`字段， `path`的格式与 Laravel data_get 格式一致， 可以用于获取嵌套的数据。如
 ```php
 $columns = [
     'id' => [
         'label' => 'ID',
-        'path' => 'user_id',
+        'path' => 'user.id',  // 
         // 以 Fluent Style API设置表头样式。
         'style' =>  (new Style())->bold()->underline()->font('red', 12)->align('center'),
     ],
 ]
 ```
 
-`path` 也可以为 closure，它会在该列的行单元格被渲染的时候执行，如：
-```
+在通过 path 获取到对应的值时候，可以通过`resolver`惊醒初步的处理，如：
+```php
 $columns = [
     'id' => [
         'label' => 'ID',
-        'path' => function($row, $rowIndex, $columnIndex, $column) {
-            return $row['user_id'];
+        'path' => 'user。id',
+        'resolver' => function($value, $row) {
+            return sprintf('Superman %s', $value);
         },
     ],
 ]
 ```
-
-返回值会被写入Excel中， 但如果返回的是`PhpOption\None`, 意味着，你将自己负责渲染这个cell， closure的参数已经告诉你单元格具体的行，列号，以及分配的列字母($column->getLetter()), 你完全可以自己渲染。
 
 ### 样式
 
@@ -178,7 +177,7 @@ Style::fromArray(
 
 ### 高级表格单元
 
-除了前面的`path`字段处理单元格的方式，你还可以在数据中直接返回一个带`render`方法对象, 这个方法与 `path`的 closure用法一模一样，唯一的区别是， 第一个参数是 XlsWriter对象，而不是整行数据，你的直觉会告诉你为什么是XlsWriter对象，而不是整行数据。
+通过前面的`path`, `resolver`字段返回的值， 可以是一个带`render`方法对象, 这个方法会在写入 excel 时候调用，如果 render 方法返回 `PhpOption\None`, 意味着，你将自己负责渲染这个cell， closure的参数已经告诉你单元格具体的`行`，`列号`，以及分配的`列字母`($column->getLetter()), 你完全可以自己渲染。
 
 这里的高级单元格，都是通过这中方法实现的。
 

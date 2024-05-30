@@ -35,7 +35,7 @@ class Column
         return $this->path?? $this->code;
     }
 
-    public function setPath($path): self
+    public function setPath(string $path = null): self
     {
         $this->path = $path;
 
