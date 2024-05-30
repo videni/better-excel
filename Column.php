@@ -9,13 +9,15 @@ class Column
     private $style;
     private $path;
     private $letter;
+    private $resolver;
 
-    public function __construct(string $code, string $label, string|\Closure $path = null, Style $style = null)
+    public function __construct(string $code, string $label, string $path = null, callable $resolver = null, Style $style = null)
     {
         $this->code = $code;
         $this->label = $label;
         $this->style = $style;
         $this->path = $path;
+        $this->resolver = $resolver;
     }
 
     public function getLabel(): string
@@ -28,9 +30,16 @@ class Column
         return $this->style;
     }
 
-    public function getPath()
+    public function getPath(): string
     {
-        return $this->path;
+        return $this->path?? $this->code;
+    }
+
+    public function setPath($path): self
+    {
+        $this->path = $path;
+
+        return $this;
     }
 
     public function getCode()
@@ -56,5 +65,35 @@ class Column
     public function getLetter()
     {
         return $this->letter;
+    }
+
+    public function setResolver($resolver): self
+    {
+        $this->resolver = $resolver;
+
+        return $this;
+    }
+
+    public function hasResolver()
+    {
+        return $this->resolver !== null;
+    }
+
+    public function getResolver()
+    {
+        return $this->resolver;
+    }
+
+    public static function fromArray(string $code, array $column)
+    {
+        $style = $column['style']??[];
+        $style = $style instanceof Style ? $style: Style::fromArray((array)$style);
+
+        return new static($code,
+            $column['label']?? $code,
+            $column['path']?? $code,
+            $column['resolver']?? null,
+            $style
+        );
     }
 }

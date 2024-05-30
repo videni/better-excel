@@ -60,9 +60,7 @@ class BetterExcel
     {
         $results = [];
         foreach($columns as $key => $column) {
-            $style = $column['style']??[];
-            $style = $style instanceof Style ? $style: Style::fromArray((array)$style);
-            $results[] = new Column($key, $column['label']??$key, $column['path']??$key, $style);
+            $results[] = $column instanceof Column ? $column: Column::fromArray($key, $column);
         }
 
         return $results;
@@ -120,12 +118,11 @@ class BetterExcel
 
         $newRow = [];
         foreach($columns as $columnIndex => $column) {
-            $value = null;
             $path = $column->getPath();
-            if (\is_callable($path)) {
-                $value = $path($row, $rowIndex, $columnIndex, $column);
-            } else {
-                $value = data_get($row, $path);
+            $value = data_get($row, $path);
+            if ($column->hasResolver())  {
+                $resolver = $column->getResolver();
+                $value = $resolver($value, $row);
             }
 
             if (is_object($value) && method_exists($value, 'render')) {
