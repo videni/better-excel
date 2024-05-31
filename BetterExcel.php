@@ -56,7 +56,7 @@ class BetterExcel
         $this->header =$this->createHeader($columns);
     }
 
-    private function createHeader($columns = [])
+    protected function createHeader($columns = [])
     {
         $results = [];
         foreach($columns as $key => $column) {
@@ -91,30 +91,30 @@ class BetterExcel
      * @param callable|null $callback
      * @return void
      */
-    private function writeRows($writer, array|Generator|Enumerable $data, ?callable $callback = null)
+    protected function writeRows($writer, array|Generator|Enumerable $data, ?callable $callback = null)
     {
         $delta = count($this->header) > 0 ? 1: 0;
 
         foreach($data as $index => $row) {
             $rowIndex = $this->withHeader? $index + $delta: $index;
+            if ($callback) {
+                $row = $callback($writer, $row, $rowIndex, $this->header);
+            }
 
-            $row = $this->transformRow($writer, $row, $rowIndex, $callback);
+            $row = $this->transformRow($writer, $row, $rowIndex);
 
             $writer->writeOneRow($row);
         }
     }
 
-    private function writeHeader($writer, $headers = [])
+    protected function writeHeader($writer, $headers = [])
     {
         $writer->writeHeader($headers);
     }
 
-    private function transformRow($writer, $row, $rowIndex, $callback = null)
+    protected function transformRow($writer, $row, $rowIndex)
     {
         $columns = $this->getHeader();
-        if ($callback) {
-            $row = $callback($row);
-        }
 
         $newRow = [];
         foreach($columns as $columnIndex => $column) {
