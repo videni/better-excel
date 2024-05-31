@@ -131,7 +131,7 @@ $columns = [
 ]
 ```
 
-在通过 path 获取到对应的值时候，可以通过`resolver`惊醒初步的处理，如：
+在通过 path 获取到对应的值时候，可以通过`resolver`进行初步的处理，如：
 ```php
 $columns = [
     'id' => [

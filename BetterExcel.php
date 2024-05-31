@@ -100,7 +100,10 @@ class BetterExcel
             if ($callback) {
                 $row = $callback($writer, $row, $rowIndex, $this->header);
             }
-
+            // Allow to render the row by itself
+            if (is_object($row) && method_exists($row, 'render')) {
+                $row->render($writer, $rowIndex, $this->header);
+            }
             $row = $this->transformRow($writer, $row, $rowIndex);
 
             $writer->writeOneRow($row);
