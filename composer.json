@@ -2,7 +2,7 @@
     "name": "videni/better-excel",
     "type": "library",
     "description": "Export data to Excel quickly, simply, naturally!",
-    "keywords": ["excel", "export", "xlswriter", "library"],
+    "keywords": ["excel", "export", "xlswriter", "library", "laravel"],
     "license": "MIT",
     "require": {
         "php": "^7.4|^8.0",

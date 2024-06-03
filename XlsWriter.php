@@ -94,8 +94,8 @@ class XlsWriter
         return $style->apply(function($formats) use($format){
             $formatter = $this->createFormatter();
 
-            foreach ($formats as $letter => $value) {
-                $formatter($letter)($value, $format);
+            foreach ($formats as $path => $value) {
+                $formatter($path)($value, $format);
             }
 
             return $format->toResource();

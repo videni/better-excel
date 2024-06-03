@@ -88,6 +88,15 @@ class Style
 
         return $this;
     }
+
+    /**
+     *
+     * 可以是， Vtiful\Kernel\Format颜色相关的常量，也可是预定义颜色名，
+     * 如black。
+     * @param string|int $color
+     *
+     * @return self
+     */
     public function fontColor($color)
     {
         if (is_string($color) ) {

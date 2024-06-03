@@ -102,7 +102,7 @@ class BetterExcel
             }
             // Allow to render the row by itself
             if (is_object($row) && method_exists($row, 'render')) {
-                $row->render($writer, $rowIndex, $this->header);
+                $row = $row->render($writer, $rowIndex, $this->header);
             }
             $row = $this->transformRow($writer, $row, $rowIndex);
 
@@ -130,7 +130,7 @@ class BetterExcel
 
             if (is_object($value) && method_exists($value, 'render')) {
                 $value = $value->render($writer, $rowIndex, $columnIndex, $column);
-                // If its "None" option, it means you are responsible to render this cell yourself
+                // If it is "None" option, it means you are responsible to render this cell yourself
                 if ($value instanceof Option) {
                    $value->forAll(function($v) use (&$newRow, $column){
                        $newRow[$column->getCode()] = $v;
