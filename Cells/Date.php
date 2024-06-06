@@ -27,7 +27,7 @@ class Date
     public function __construct($value, $format = null, Style $style = null)
     {
         $this->value = $value;
-        $this->format = $format ?? 'yyyy/m/d hh:mm:ss';
+        $this->format = $format ?? 'yyyy-m-d hh:mm:ss';
         $this->style = $style ?? (new Style())->align('center');
     }
 

@@ -20,6 +20,8 @@ class BetterExcel
 
     private $options = [];
 
+    private $rowIndex = 0;
+
     /**
      * @param array|Generator|Enumerable|null $data
      * @param array $options
@@ -38,6 +40,8 @@ class BetterExcel
         }
 
         $this->writeRows($writer, $this->data, $callback);
+
+        $this->rowIndex = 0;
 
         return $writer->saveToFile($filename);
     }
@@ -95,8 +99,10 @@ class BetterExcel
     {
         $delta = count($this->header) > 0 ? 1: 0;
 
-        foreach($data as $index => $row) {
-            $rowIndex = $this->withHeader? $index + $delta: $index;
+        $rowIndex = $this->rowIndex;
+
+        foreach($data as $row) {
+            $rowIndex = $this->withHeader ? $rowIndex+ $delta: $rowIndex;
             if ($callback) {
                 $row = $callback($writer, $row, $rowIndex, $this->header);
             }
@@ -107,6 +113,8 @@ class BetterExcel
             $row = $this->transformRow($writer, $row, $rowIndex);
 
             $writer->writeOneRow($row);
+
+            $this->rowIndex++;
         }
     }
 
