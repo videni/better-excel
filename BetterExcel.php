@@ -129,8 +129,7 @@ class BetterExcel
 
         $newRow = [];
         foreach($columns as $columnIndex => $column) {
-            $path = $column->getPath();
-            $value = data_get($row, $path);
+            $value = $column->getUnresolvedValue($row);
             if ($resolver = $column->getResolver())  {
                 $value = $resolver($value, $row);
             }

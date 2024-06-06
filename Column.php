@@ -32,7 +32,7 @@ class Column
 
     public function getPath(): string
     {
-        return $this->path?? $this->code;
+        return $this->path ?? $this->code;
     }
 
     public function setPath(string $path = null): self
@@ -95,5 +95,10 @@ class Column
             $column['resolver']?? null,
             $style
         );
+    }
+
+    public function getUnresolvedValue($row, $default = null)
+    {
+        return data_get($row, $this->getPath(), $default);
     }
 }
