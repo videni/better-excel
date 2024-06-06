@@ -79,7 +79,7 @@ class Column
         return $this->resolver !== null;
     }
 
-    public function getResolver()
+    public function getResolver(): ?callable
     {
         return $this->resolver;
     }
