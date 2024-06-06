@@ -131,8 +131,7 @@ class BetterExcel
         foreach($columns as $columnIndex => $column) {
             $path = $column->getPath();
             $value = data_get($row, $path);
-            if ($column->hasResolver())  {
-                $resolver = $column->getResolver();
+            if ($resolver = $column->getResolver())  {
                 $value = $resolver($value, $row);
             }
 
