@@ -41,8 +41,6 @@ class BetterExcel
 
         $this->writeRows($writer, $this->data, $callback);
 
-        $this->rowIndex = 0;
-
         return $writer->saveToFile($filename);
     }
 
