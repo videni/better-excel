@@ -104,13 +104,14 @@ class BetterExcel
             if ($callback) {
                 $row = $callback($writer, $row, $rowIndex, $this->header);
             }
-            // Allow to render the row by itself
-            if (is_object($row) && method_exists($row, 'render')) {
-                $row = $row->render($writer, $rowIndex, $this->header);
-            }
-            $row = $this->transformRow($writer, $row, $rowIndex);
+            [$simple, $complex] = $this->transformRow($row);
 
-            $writer->writeOneRow($row);
+            $writer->writeOneRow(array_values($simple));
+
+            foreach($complex as $cell) {
+                [$value, $columnIndex, $column] = $cell;
+                $value->render($writer, $rowIndex, $columnIndex, $column);
+            }
 
             $this->rowIndex++;
         }
@@ -121,32 +122,27 @@ class BetterExcel
         $writer->writeHeader($headers);
     }
 
-    protected function transformRow($writer, $row, $rowIndex)
+    protected function transformRow($row)
     {
         $columns = $this->getHeader();
 
-        $newRow = [];
+        $simple = [];
+        $complex = [];
+
         foreach($columns as $columnIndex => $column) {
             $value = $column->getUnresolvedValue($row);
             if ($resolver = $column->getResolver())  {
                 $value = $resolver($value, $row);
             }
-
             if (is_object($value) && method_exists($value, 'render')) {
-                $value = $value->render($writer, $rowIndex, $columnIndex, $column);
-                // If it is "None" option, it means you are responsible to render this cell yourself
-                if ($value instanceof Option) {
-                   $value->forAll(function($v) use (&$newRow, $column){
-                       $newRow[$column->getCode()] = $v;
-                   });
-
-                   continue;
-                }
+                $complex[] = [$value, $columnIndex, $column];
+               //the cell will render itself, so  we set it to null to keep the data position
+               $simple[$column->getCode()] = null;
+               continue;
             }
-
-            $newRow[$column->getCode()] = $value;
+            $simple[$column->getCode()] = $value;
         }
 
-        return $newRow;
+        return [$simple, $complex];
     }
 }

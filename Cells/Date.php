@@ -31,7 +31,7 @@ class Date
         $this->style = $style ?? (new Style())->align('center');
     }
 
-    public function render($writer, $rowIndex, $columnIndex, Column $_column): Option
+    public function render($writer, $rowIndex, $columnIndex, Column $_column): void
     {
         Assert::isInstanceOf($writer, XlsWriter::class);
 
@@ -42,8 +42,6 @@ class Date
             $this->format,
             $this->style ? $writer->formatStyle($this->style): null
         );
-
-        return None::create();
     }
 
     public static function fromTimeStamp(int $timestamp, $format = null, Style $style = null)
