@@ -12,9 +12,9 @@ class EmbedImage
 {
     public const DEFAULT_IMAGE_SIZE = 100;
 
-    private $path;
-    private $style;
-    private $imageSize;
+    protected $path;
+    protected $style;
+    protected $imageSize;
 
     public function __construct(string|\Closure $path, Style $style =null, $imageSize = null)
     {
@@ -23,9 +23,18 @@ class EmbedImage
         $this->imageSize = $imageSize ?? self::DEFAULT_IMAGE_SIZE;
     }
 
+    /**
+     *  Download the image from the url and insert it to the excel.
+     *
+     * @param string $imgUrl
+     * @param int|null $imageSize
+     * @param Style|null $style
+     * @param string|Null $title
+     * @return self
+     */
     public static function fromUrl(string $imgUrl, $imageSize = null, Style $style =null, $title = null)
     {
-        return new static(function($writer, $rowIndex, $columnIndex) use($imgUrl, $title) {
+        $imageProcessor = function($writer, $rowIndex, $columnIndex) use($imgUrl, $title) {
             $writer->insertUrl(
                 $rowIndex,
                 $columnIndex,
@@ -44,10 +53,19 @@ class EmbedImage
             }
 
             return $localPath;
-        }
-        , $style, $title, $imageSize);
+        };
+
+        return new static($imageProcessor, $style, $imageSize);
     }
 
+    /**
+     * Insert a image to excel from the local path.
+     *
+     * @param string $path
+     * @param int $imageSize
+     * @param Style|null $style
+     * @return self
+     */
     public function fromPath(string $path, $imageSize = null, Style $style =null)
     {
         return new static($path, $style, $imageSize);
