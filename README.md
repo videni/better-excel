@@ -173,7 +173,7 @@ Style::fromArray(
 
 ## 高级表格单元
 
-通过前面的`path`, `resolver`字段返回的值， 可以是一个带`render`方法对象, 这个方法会在写入 excel 时候调用，如果 render 方法返回 `PhpOption\None`, 意味着，你将自己负责渲染这个cell， closure的参数已经告诉你单元格具体的`行`，`列号`，以及分配的`列字母`($column->getLetter()), 你完全可以自己渲染。
+通过前面的`path`, `resolver`字段返回的值， 可以是一个带`render`方法对象, 这个方法会在写入 excel 时候调用。这种用法，意味着，你将自己负责渲染这个cell， closure的参数已经告诉你单元格具体的`行`，`列号`，以及分配的`列字母`($column->getLetter()), 你完全可以自己渲染。
 
 这里的高级单元格，都是通过这中方法实现的。
 
