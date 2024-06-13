@@ -5,7 +5,6 @@ namespace Modules\BetterExcel;
 use Generator;
 use Illuminate\Support\Enumerable;
 use Illuminate\Support\Str;
-use PhpOption\Option;
 
 class BetterExcel
 {
@@ -95,26 +94,35 @@ class BetterExcel
      */
     protected function writeRows($writer, array|Generator|Enumerable $data, ?callable $callback = null)
     {
-        $delta = count($this->header) > 0 ? 1: 0;
-
         $rowIndex = $this->rowIndex;
+        if ($this->withHeader && count($this->header) > 0) {
+            $rowIndex =  $rowIndex + 1;
+        }
 
         foreach($data as $row) {
-            $rowIndex = $this->withHeader ? $rowIndex+ $delta: $rowIndex;
             if ($callback) {
                 $row = $callback($writer, $row, $rowIndex, $this->header);
             }
+            // Allow to render the row by itself
+            if (is_object($row) && method_exists($row, 'render')) {
+                $row = $row->render($writer, $rowIndex, $this->header);
+            }
+
             [$simple, $complex] = $this->transformRow($row);
 
-            $writer->writeOneRow(array_values($simple));
-
+            // 1. Must Render the complex cells first
             foreach($complex as $cell) {
                 [$value, $columnIndex, $column] = $cell;
                 $value->render($writer, $rowIndex, $columnIndex, $column);
             }
+            // 2. Then the simple cells, otherwise the simple cells will be overwritten by complex,
+            // I don't why , ask the author of the XlsWriter library.
+            $writer->writeOneRow(array_values($simple));
 
-            $this->rowIndex++;
+            $rowIndex++;
         }
+
+        $this->rowIndex = $rowIndex;
     }
 
     protected function writeHeader($writer, $headers = [])

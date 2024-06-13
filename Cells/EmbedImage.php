@@ -18,6 +18,10 @@ class EmbedImage
 
     public function __construct(string|\Closure $path, Style $style =null, $imageSize = null)
     {
+        if (is_callable($path)) {
+            $path->bindTo($this);
+        }
+
         $this->path = $path;
         $this->style = $style ?? (new Style())->align('center', 'center');
         $this->imageSize = $imageSize ?? self::DEFAULT_IMAGE_SIZE;
@@ -34,7 +38,7 @@ class EmbedImage
      */
     public static function fromUrl(string $imgUrl, $imageSize = null, Style $style =null, $title = null)
     {
-        $imageProcessor = function($writer, $rowIndex, $columnIndex) use($imgUrl, $title) {
+        $imageProcessor = function($self, $writer, $rowIndex, $columnIndex) use($imgUrl, $title) {
             $writer->insertUrl(
                 $rowIndex,
                 $columnIndex,
@@ -45,8 +49,8 @@ class EmbedImage
             );
 
             try {
-                $localPath = $this->downloadImageToTmpDir($imgUrl);
-                $localPath = $this->convertToThumbnailImageLocally($localPath, $this->imageSize);
+                $localPath = $self->downloadImageToTmpDir($imgUrl);
+                $localPath = $self->convertToThumbnailImageLocally($localPath, $self->imageSize);
             } catch(\Exception $e) {
                 // Don't do anything, at least we have a link in the cell.
                 return null;
@@ -75,15 +79,18 @@ class EmbedImage
     {
         Assert::isInstanceOf($writer, XlsWriter::class);
 
-        $localPath = \is_callable($this->path) ? call_user_func($this->path, [$writer, $rowIndex, $columnIndex]): $this->path;
+        $localPath = $this->path;
+        if (\is_callable($localPath)) {
+            $localPath =  $localPath($this, $writer, $rowIndex, $columnIndex);
+        }
 
         if ($localPath === null || file_exists($localPath) === false) {
             return;
         }
 
         $height = self::DEFAULT_IMAGE_SIZE;
-        if ($this->style && $height = $this->style->getHeight()) {
-            $height = $height;
+        if ($this->style && null !== $this->style->getHeight()) {
+            $height = $this->style->getHeight();
         }
 
         $writer
@@ -91,7 +98,8 @@ class EmbedImage
             // Set the image cell height, the width is set by the header, that is why
             // I don't set the width here.
             ->setRow(
-                sprintf($column->getLetter(). $rowIndex),
+                //必须要加 1， 为什么设置行的高度要加 1？ask the author of XlsWriter library.
+                sprintf($column->getLetter(). $rowIndex + 1),
                 $height,
                 $this->style ? $writer->formatStyle($this->style): null
             );
@@ -100,7 +108,7 @@ class EmbedImage
     /**
      * @return string | \Exception
      */
-    private function downloadImageToTmpDir($imgUrl)
+    public function downloadImageToTmpDir($imgUrl)
     {
         $tempPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . basename($imgUrl);
         if (file_exists($tempPath)) {
@@ -114,7 +122,7 @@ class EmbedImage
         return $tempPath;
     }
 
-    private function convertToThumbnailImageLocally($imagePath, $imageSize)
+    public function convertToThumbnailImageLocally($imagePath, $imageSize)
     {
         $outputFile = dirname($imagePath).DIRECTORY_SEPARATOR. md5($imagePath) . '.png';
         if (file_exists($outputFile)) {
