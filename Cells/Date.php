@@ -12,17 +12,17 @@ use PhpOption\Option;
 
 class Date
 {
-    private $value;
+    protected $value;
 
     /**
      * @var string
      */
-    private $format;
+    protected $format;
 
     /**
      * @var Style
      */
-    private $style;
+    protected $style;
 
     public function __construct($value, $format = null, Style $style = null)
     {
