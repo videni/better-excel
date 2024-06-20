@@ -75,7 +75,7 @@ class EmbedImage
         return new static($path, $style, $imageSize);
     }
 
-    public function render($writer, $rowIndex, $columnIndex, Column $column)
+    public function render(XlsWriter $writer, $rowIndex, $columnIndex, Column $column): void
     {
         Assert::isInstanceOf($writer, XlsWriter::class);
 
