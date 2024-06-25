@@ -132,7 +132,7 @@ $columns = [
 $columns = [
     'id' => [
         'label' => 'ID',
-        'path' => 'user。id',
+        'path' => 'user.id',
         'resolver' => function($value, $row) {
             return sprintf('Superman %s', $value);
         },

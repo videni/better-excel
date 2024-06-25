@@ -98,7 +98,7 @@ class EmbedImage
             // Set the image cell height, the width is set by the header, that is why
             // I don't set the width here.
             ->setRow(
-                //必须要加 1， 为什么设置行的高度要加 1？ask the author of XlsWriter library.
+                //必须要加 1， 为什么设置行号要加1？ask the author of XlsWriter library.
                 sprintf($column->getLetter(). $rowIndex + 1),
                 $height,
                 $this->style ? $writer->formatStyle($this->style): null
