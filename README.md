@@ -235,5 +235,5 @@ new SpecialRow([ 'id' => 1, 'name' => 'Jane', 'born_at' => Date::fromTimeStamp(t
 # 测试
 
 ```
-vendor/bin/phpspec run Modules/Export/spec/BetterExcelSpec.php
+vendor/bin/phpspec run --format=pretty
 ```
