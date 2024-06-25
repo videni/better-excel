@@ -15,6 +15,7 @@ class XlsWriter
     {
         $this->excel = new Excel($options);
 
+        // the fileName must set ahead
         $this->excel->fileName($filename);
     }
 
