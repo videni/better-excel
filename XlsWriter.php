@@ -33,6 +33,7 @@ class XlsWriter
 
         foreach ($mappings as $letter => $column) {
             $column->setLetter($letter);
+            // Set style for the whole column, for example, "A:A" is for the whole column A,
             $range = sprintf('%1$s:%1$s', $letter);
 
             $this->excel->setColumn(
