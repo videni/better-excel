@@ -26,7 +26,7 @@ class Date
     {
         $this->value = $value;
         $this->format = $format ?? 'yyyy-m-d hh:mm:ss';
-        $this->style = $style ?? (new Style())->align('center');
+        $this->style = $style ?? (new Style())->align();
     }
 
     public function render($writer, CellInfo $info): void
