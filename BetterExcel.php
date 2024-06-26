@@ -108,16 +108,9 @@ class BetterExcel
                 $row = $row->render($writer, $rowIndex, $this->header);
             }
 
-            [$simple, $complex] = $this->transformRow($row);
+            $data = $this->transformRow($row, $rowIndex);
 
-            // 1. Must Render the complex cells first
-            foreach($complex as $cell) {
-                [$value, $columnIndex, $column] = $cell;
-                $value->render($writer, $rowIndex, $columnIndex, $column);
-            }
-            // 2. Then the simple cells, otherwise the simple cells will be overwritten by complex,
-            // I don't why , ask the author of the XlsWriter library.
-            $writer->writeOneRow(array_values($simple));
+            $writer->writeOneRow($data);
 
             $rowIndex++;
         }
@@ -130,27 +123,21 @@ class BetterExcel
         $writer->writeHeader($headers);
     }
 
-    protected function transformRow($row)
+    protected function transformRow($row, $rowIndex)
     {
         $columns = $this->getHeader();
 
-        $simple = [];
-        $complex = [];
+        $data = [];
 
         foreach($columns as $columnIndex => $column) {
             $value = $column->getUnresolvedValue($row);
             if ($resolver = $column->getResolver())  {
                 $value = $resolver($value, $row);
             }
-            if (is_object($value) && method_exists($value, 'render')) {
-                $complex[] = [$value, $columnIndex, $column];
-               //the cell will render itself, so  we set it to null to keep the data position
-               $simple[$column->getCode()] = null;
-               continue;
-            }
-            $simple[$column->getCode()] = $value;
+
+            $data[] = CellInfo::create($value, $columnIndex, $rowIndex, $column);
         }
 
-        return [$simple, $complex];
+        return $data;
     }
 }

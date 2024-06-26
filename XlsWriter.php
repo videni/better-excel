@@ -33,7 +33,7 @@ class XlsWriter
 
         foreach ($mappings as $letter => $column) {
             $column->setLetter($letter);
-            $range = sprintf('%1$s1:%1$s1', $letter);
+            $range = sprintf('%1$s:%1$s', $letter);
 
             $this->excel->setColumn(
                 $range,
@@ -50,9 +50,17 @@ class XlsWriter
         $this->excel->header($labels);
     }
 
-    public function writeOneRow(array $row)
+    public function writeOneRow(array $data)
     {
-        $this->excel->data([$row]);
+        $newData = [];
+        // 1. Must Render the all rendering object first
+        foreach($data as $cell) {
+            $newData[] = $cell->render($this);
+        }
+
+        // 2. Then the simple cells, otherwise the simple cells will be overwritten by rendering object,
+        // I don't why , ask the author of the XlsWriter library.
+        $this->excel->data([$newData]);
     }
 
     public function saveToFile($filename = null)

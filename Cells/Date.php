@@ -3,12 +3,10 @@
 namespace Modules\BetterExcel\Cells;
 
 use Carbon\Carbon;
+use Modules\BetterExcel\CellInfo;
 use Modules\BetterExcel\Style;
-use Modules\BetterExcel\Column;
 use Webmozart\Assert\Assert;
 use Modules\BetterExcel\XlsWriter;
-use PhpOption\None;
-use PhpOption\Option;
 
 class Date
 {
@@ -31,16 +29,22 @@ class Date
         $this->style = $style ?? (new Style())->align('center');
     }
 
-    public function render($writer, $rowIndex, $columnIndex, Column $_column): void
+    public function render($writer, CellInfo $info): void
     {
         Assert::isInstanceOf($writer, XlsWriter::class);
+
+        $rowIndex = $info->rowIndex;
+        $columnIndex = $info->columnIndex;
+        $column = $info->column;
+
+        $style = $this->style ?? $column->getStyle();
 
         $writer->insertDate(
             $rowIndex,
             $columnIndex,
             $this->value,
             $this->format,
-            $this->style ? $writer->formatStyle($this->style): null
+            $style ? $writer->formatStyle($style): null
         );
     }
 
