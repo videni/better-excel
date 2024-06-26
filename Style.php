@@ -134,7 +134,7 @@ class Style
         return $this;
     }
 
-    public function align($horizontal, $vertical = null)
+    public function align($horizontal = 'left', $vertical = 'bottom')
     {
         $horizontalAlignments = [
             'left', 'center', 'right', 'fill', 'justify', 'center_across', 'distributed'

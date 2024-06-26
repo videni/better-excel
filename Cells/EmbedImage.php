@@ -3,8 +3,8 @@
 namespace Modules\BetterExcel\Cells;
 
 use GuzzleHttp\Client;
+use Modules\BetterExcel\CellInfo;
 use Modules\BetterExcel\XlsWriter;
-use Modules\BetterExcel\Column;
 use Modules\BetterExcel\Style;
 use Webmozart\Assert\Assert;
 
@@ -23,7 +23,7 @@ class EmbedImage
         }
 
         $this->path = $path;
-        $this->style = $style ?? (new Style())->align('center', 'center');
+        $this->style = $style ?? (new Style())->align('left', 'bottom');
         $this->imageSize = $imageSize ?? self::DEFAULT_IMAGE_SIZE;
     }
 
@@ -75,9 +75,13 @@ class EmbedImage
         return new static($path, $style, $imageSize);
     }
 
-    public function render(XlsWriter $writer, $rowIndex, $columnIndex, Column $column): void
+    public function render(XlsWriter $writer, CellInfo $info): void
     {
         Assert::isInstanceOf($writer, XlsWriter::class);
+
+        $rowIndex = $info->rowIndex;
+        $columnIndex = $info->columnIndex;
+        $column = $info->column;
 
         $localPath = $this->path;
         if (\is_callable($localPath)) {
@@ -88,9 +92,10 @@ class EmbedImage
             return;
         }
 
+        $style = $this->style ?? $column->getStyle();
         $height = self::DEFAULT_IMAGE_SIZE;
-        if ($this->style && null !== $this->style->getHeight()) {
-            $height = $this->style->getHeight();
+        if ($style && null !== $style->getHeight()) {
+            $height = $style->getHeight();
         }
 
         $writer
@@ -99,9 +104,9 @@ class EmbedImage
             // I don't set the width here.
             ->setRow(
                 //必须要加 1， 为什么设置行号要加1？ask the author of XlsWriter library.
-                sprintf($column->getLetter(). $rowIndex + 1),
+                sprintf('%s', $column->getLetter(). $rowIndex + 1),
                 $height,
-                $this->style ? $writer->formatStyle($this->style): null
+                // $style ? $writer->formatStyle($style): null
             );
     }
 
