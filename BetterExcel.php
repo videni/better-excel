@@ -22,10 +22,10 @@ class BetterExcel
     private $rowIndex = 0;
 
     /**
-     * @param array|Generator|Enumerable|null $data
+     * @param array|Generator|Enumerable $data
      * @param array $options
      */
-    public function __construct(array|Generator|Enumerable $data = null, array $options = [])
+    public function __construct(array|Generator|Enumerable $data , array $options = [])
     {
         $this->data = $data;
         $this->options = $options;
