@@ -3,6 +3,9 @@
 namespace Modules\BetterExcel\Cells;
 
 use Carbon\Carbon;
+use Carbon\CarbonTimeZone;
+use DateTime;
+use DateTimeZone;
 use Modules\BetterExcel\CellInfo;
 use Modules\BetterExcel\Style;
 use Webmozart\Assert\Assert;
@@ -53,8 +56,16 @@ class Date
         return new static($timestamp, $format, $style);
     }
 
-    public static function fromCarbon(Carbon $carbon, $format = null, Style $style = null)
+    public static function fromCarbon(Carbon $carbon, $timezone = 'UTC', $format = null, Style $style = null)
     {
-        return new static($carbon->getTimestamp(), $format, $style);
+        $tz = new CarbonTimeZone($timezone);
+
+        $localTime = $carbon->copy()->timezone($tz);
+
+        $offset = $localTime->offset;
+
+        $localTimestamp = $carbon->getTimestamp() + $offset;
+
+        return new static($localTimestamp, $format, $style);
     }
 }
