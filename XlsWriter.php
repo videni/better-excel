@@ -59,8 +59,6 @@ class XlsWriter
             $newData[] = $cell->render($this);
         }
 
-        file_put_contents(__DIR__.'/test.txt', var_export($newData, true), FILE_APPEND);
-
         // 2. Then the simple cells, otherwise the simple cells will be overwritten by rendering object,
         // I don't why , ask the author of the XlsWriter library.
         $this->excel->data([$newData]);
