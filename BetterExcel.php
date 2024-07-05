@@ -45,7 +45,7 @@ class BetterExcel
 
     protected function createWriter($filename, $options = [])
     {
-        if (Str::endsWith($filename, 'xls')) {
+        if (Str::endsWith($filename, ['xls', 'xlsx'])) {
             return new XlsWriter($filename, $options);
         }
 
