@@ -2,7 +2,6 @@
 
 namespace Modules\BetterExcel\Cells;
 
-use GuzzleHttp\Client;
 use Modules\BetterExcel\CellInfo;
 use Modules\BetterExcel\XlsWriter;
 use Modules\BetterExcel\Style;
@@ -15,11 +14,11 @@ class EmbedImage
     protected $path;
     protected $style;
     protected $imageSize;
-    protected $imagick;
+    protected $excelImageProcessor;
 
     public function __construct(string|\Closure $path, Style $style =null, $imageSize = null)
     {
-        $this->imagick = new \Imagick();
+        $this->excelImageProcessor = new ExcelImageProcessor();
 
         if (is_callable($path)) {
             $path->bindTo($this);
@@ -41,7 +40,7 @@ class EmbedImage
      */
     public static function fromUrl(string $imgUrl, $imageSize = null, Style $style =null, $title = null)
     {
-        $imageProcessor = function($self, $writer, $rowIndex, $columnIndex) use($imgUrl, $title) {
+        $callback = function(EmbedImage $self, $writer, $rowIndex, $columnIndex) use($imgUrl, $title) {
             $writer->insertUrl(
                 $rowIndex,
                 $columnIndex,
@@ -52,8 +51,8 @@ class EmbedImage
             );
 
             try {
-                $localPath = Self::downloadImageToTmpDir($imgUrl);
-                $localPath = $self->convertToPNGFormatLocally($localPath);
+                $localPath = $self->excelImageProcessor->downloadImageToTmpDir($imgUrl);
+                $localPath = $self->excelImageProcessor->convertToPNGFormatLocally($localPath);
             } catch(\Exception $e) {
                 // Don't do anything, at least we have a link in the cell.
                 return null;
@@ -62,7 +61,7 @@ class EmbedImage
             return $localPath;
         };
 
-        return new static($imageProcessor, $style, $imageSize);
+        return new static($callback, $style, $imageSize);
     }
 
     /**
@@ -96,7 +95,7 @@ class EmbedImage
             $height = $style->getHeight();
         }
 
-        [$scaleWidth, $scaleHeight] = $this->calculateImageScaleFactor($localPath);
+        [$scaleWidth, $scaleHeight] = $this->excelImageProcessor->calculateImageScaleFactor($localPath, $this->imageSize);
 
         $writer
             ->insertImage($info->rowIndex,  $info->columnIndex, $localPath, $scaleWidth, $scaleHeight)
@@ -108,75 +107,5 @@ class EmbedImage
                 $height,
                 // $style ? $writer->formatStyle($style): null
             );
-    }
-
-    private function calculateImageScaleFactor($localPath)
-    {
-        $this->imagick->readImage($localPath);
-
-        $width = $this->imagick->getImageWidth();
-        $height = $this->imagick->getImageHeight();
-
-        $this->imagick->clear();
-
-        // If the image is smaller than the imageSize, then don't scale it.
-        if ($width < $this->imageSize && $height < $this->imageSize) {
-            return [1, 1];
-        }
-
-        $scaleWidth = $this->imageSize / $width;
-        $scaleHeight = $this->imageSize/ $height;
-
-        // Make the image fit the imageSize
-        $ratio = $height / $width;
-        if ($ratio > 1) {
-            $scaleWidth = $scaleHeight/$ratio;
-        } else {
-            $scaleHeight = $scaleWidth * $ratio;
-        }
-
-        return [$scaleWidth, $scaleHeight];
-    }
-    /**
-     * @return string | \Exception
-     */
-    public static function downloadImageToTmpDir($imgUrl)
-    {
-        $tempPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . md5($imgUrl);
-        if (file_exists($tempPath)) {
-            return $tempPath;
-        }
-
-        $client = new Client();
-        $client->get($imgUrl, ["sink" => $tempPath]);
-
-        return $tempPath;
-    }
-
-    /**
-     *
-     * @param string $imagePath
-     * @return  $localPath
-     */
-    public function convertToPNGFormatLocally($imagePath)
-    {
-        // If the image is already proper format, then return the path.
-        if (in_array(pathinfo($imagePath, PATHINFO_EXTENSION), ['png', 'jpg'])) {
-            return $imagePath;
-        }
-
-        $outputFile = dirname($imagePath).DIRECTORY_SEPARATOR. md5($imagePath) . '.png';
-        if (file_exists($outputFile)) {
-            return $outputFile;
-        }
-        $imagick = $this->imagick;
-
-        $imagick->readImage($imagePath);
-        $imagick->setImageFormat('png');
-        $imagick->writeImage($outputFile);
-
-        $this->imagick->clear();
-
-        return $outputFile;
     }
 }
