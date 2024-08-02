@@ -15,9 +15,12 @@ class EmbedImage
     protected $path;
     protected $style;
     protected $imageSize;
+    protected $imagick;
 
     public function __construct(string|\Closure $path, Style $style =null, $imageSize = null)
     {
+        $this->imagick = new \Imagick();
+
         if (is_callable($path)) {
             $path->bindTo($this);
         }
@@ -49,8 +52,8 @@ class EmbedImage
             );
 
             try {
-                $localPath = $self->downloadImageToTmpDir($imgUrl);
-                $localPath = $self->convertToThumbnailImageLocally($localPath, $self->imageSize);
+                $localPath = Self::downloadImageToTmpDir($imgUrl);
+                $localPath = $self->convertToPNGFormatLocally($localPath);
             } catch(\Exception $e) {
                 // Don't do anything, at least we have a link in the cell.
                 return null;
@@ -65,12 +68,12 @@ class EmbedImage
     /**
      * Insert a image to excel from the local path.
      *
-     * @param string $path
+     * @param  $path
      * @param int $imageSize
      * @param Style|null $style
      * @return self
      */
-    public function fromPath(string $path, $imageSize = null, Style $style =null)
+    public function fromPath($path, $imageSize = null, Style $style =null)
     {
         return new static($path, $style, $imageSize);
     }
@@ -79,76 +82,100 @@ class EmbedImage
     {
         Assert::isInstanceOf($writer, XlsWriter::class);
 
-        $rowIndex = $info->rowIndex;
-        $columnIndex = $info->columnIndex;
-        $column = $info->column;
-
         $localPath = $this->path;
         if (\is_callable($localPath)) {
-            $localPath =  $localPath($this, $writer, $rowIndex, $columnIndex);
+            $localPath =  $localPath($this, $writer, $info->rowIndex, $info->columnIndex);
         }
-
         if ($localPath === null || file_exists($localPath) === false) {
             return;
         }
 
-        $style = $this->style ?? $column->getStyle();
+        $style = $this->style ?? $info->column->getStyle();
         $height = self::DEFAULT_IMAGE_SIZE;
         if ($style && null !== $style->getHeight()) {
             $height = $style->getHeight();
         }
 
+        [$scaleWidth, $scaleHeight] = $this->calculateImageScaleFactor($localPath);
+
         $writer
+            ->insertImage($info->rowIndex,  $info->columnIndex, $localPath, $scaleWidth, $scaleHeight)
             // Set the image cell height, the width is set by the header, that is why
             // I don't set the width here.
             ->setRow(
                 //必须要加 1， 为什么设置行号要加1？ask the author of XlsWriter library.
-                sprintf('%s', $column->getLetter(). $rowIndex + 1),
+                sprintf('%s', $info->column->getLetter(). $info->rowIndex + 1),
                 $height,
                 // $style ? $writer->formatStyle($style): null
-            )->insertImage($rowIndex,  $columnIndex, $localPath);
+            );
     }
 
+    private function calculateImageScaleFactor($localPath)
+    {
+        $this->imagick->readImage($localPath);
+
+        $width = $this->imagick->getImageWidth();
+        $height = $this->imagick->getImageHeight();
+
+        $this->imagick->clear();
+
+        // If the image is smaller than the imageSize, then don't scale it.
+        if ($width < $this->imageSize && $height < $this->imageSize) {
+            return [1, 1];
+        }
+
+        $scaleWidth = $this->imageSize / $width;
+        $scaleHeight = $this->imageSize/ $height;
+
+        // Make the image fit the imageSize
+        $ratio = $height / $width;
+        if ($ratio > 1) {
+            $scaleWidth = $scaleHeight/$ratio;
+        } else {
+            $scaleHeight = $scaleWidth * $ratio;
+        }
+
+        return [$scaleWidth, $scaleHeight];
+    }
     /**
      * @return string | \Exception
      */
-    public function downloadImageToTmpDir($imgUrl)
+    public static function downloadImageToTmpDir($imgUrl)
     {
         $tempPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . md5($imgUrl);
         if (file_exists($tempPath)) {
             return $tempPath;
         }
 
-        // TODO: Refactor this object according to flyweight pattern
         $client = new Client();
         $client->get($imgUrl, ["sink" => $tempPath]);
 
         return $tempPath;
     }
 
-    public function convertToThumbnailImageLocally($imagePath, $imageSize)
+    /**
+     *
+     * @param string $imagePath
+     * @return  $localPath
+     */
+    public function convertToPNGFormatLocally($imagePath)
     {
+        // If the image is already proper format, then return the path.
+        if (in_array(pathinfo($imagePath, PATHINFO_EXTENSION), ['png', 'jpg'])) {
+            return $imagePath;
+        }
+
         $outputFile = dirname($imagePath).DIRECTORY_SEPARATOR. md5($imagePath) . '.png';
         if (file_exists($outputFile)) {
             return $outputFile;
         }
-
-        // TODO: Refactor this object according to flyweight pattern,
-        // so this object can be reused  to convert other images.
-        $imagick = new \Imagick();
+        $imagick = $this->imagick;
 
         $imagick->readImage($imagePath);
-
-        $imagick->resizeImage($imageSize, $imageSize, \Imagick::FILTER_LANCZOS, 1);
         $imagick->setImageFormat('png');
-
         $imagick->writeImage($outputFile);
 
-        // Clear the resource taken by the image itself,
-        // the $imagick object can be used to process other images.
-        $imagick->clear();
-
-        $imagick->destroy();
+        $this->imagick->clear();
 
         return $outputFile;
     }
