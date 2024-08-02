@@ -64,13 +64,10 @@ class XlsWriter
     public function writeOneRow(array $data)
     {
         $newData = [];
-        // 1. Must Render the all rendering object first
         foreach($data as $cell) {
-            $newData[] = $cell->render($this);
+            $newData[] = method_exists($cell, 'render') ? $cell->render($this): $cell;
         }
 
-        // 2. Then the simple cells, otherwise the simple cells will be overwritten by rendering object,
-        // I don't why , ask the author of the XlsWriter library.
         $this->excel->data([$newData]);
     }
 
