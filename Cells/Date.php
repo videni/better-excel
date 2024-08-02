@@ -34,7 +34,7 @@ class Date
     {
         Assert::isInstanceOf($writer, XlsWriter::class);
 
-        $style = $this->style ?? $info->column->getStyle();
+        $style = $this->style ?? $info->style;
 
         $writer->insertDate(
             $info->rowIndex,

@@ -135,7 +135,7 @@ class BetterExcel
                 $value = $resolver($value, $row);
             }
 
-            $data[] = CellInfo::create($value, $columnIndex, $rowIndex, $column);
+            $data[] = CellInfo::create($value, $columnIndex, $rowIndex, $column->getStyle(), $column->getLetter());
         }
 
         return $data;

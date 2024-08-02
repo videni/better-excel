@@ -9,18 +9,30 @@ class CellInfo
     public $rowIndex;
     /**
      *
+     * @var Style|null
+     */
+    public $style;
+
+    /**
+     * @var string|null
+     */
+    public $columnLetter;
+
+    /**
+     *
      * @var Column
      */
     public $column;
 
-    public static function create($resolvedValue, $columnIndex, $rowIndex,  Column $column)
+    public static function create($resolvedValue, $columnIndex, $rowIndex, Style $style = null, $columnLetter = null)
     {
         $self = new CellInfo();
 
         $self->resolvedValue = $resolvedValue;
         $self->columnIndex = $columnIndex;
         $self->rowIndex = $rowIndex;
-        $self->column = $column;
+        $self->style = $style;
+        $self->columnLetter = $columnLetter;
 
         return $self;
     }

@@ -89,7 +89,7 @@ class EmbedImage
             return;
         }
 
-        $style = $this->style ?? $info->column->getStyle();
+        $style = $this->style ?? $info->style;
         $height = self::DEFAULT_IMAGE_SIZE;
         if ($style && null !== $style->getHeight()) {
             $height = $style->getHeight();
@@ -103,7 +103,7 @@ class EmbedImage
             // I don't set the width here.
             ->setRow(
                 //必须要加 1， 为什么设置行号要加1？ask the author of XlsWriter library.
-                sprintf('%s', $info->column->getLetter(). $info->rowIndex + 1),
+                sprintf('%s', $info->columnLetter. $info->rowIndex + 1),
                 $height,
                 // $style ? $writer->formatStyle($style): null
             );
