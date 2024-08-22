@@ -15,7 +15,7 @@ class XlsWriter
     {
         $constMemory = $options['const_memory']?? false;
         $defaultSheetName = $options['sheet_name']?? 'Sheet1';
-        $enableZip64 = $options['enable_zip64']?? false;
+        $enableZip64 = $options['enable_zip64']?? true;
 
         $this->excel = new Excel([
             // path is required, but here just simply let the Excel class complains

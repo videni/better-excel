@@ -99,7 +99,6 @@ class EmbedImage
         }
 
         $writer
-            ->insertImage($rowIndex,  $columnIndex, $localPath)
             // Set the image cell height, the width is set by the header, that is why
             // I don't set the width here.
             ->setRow(
@@ -107,7 +106,7 @@ class EmbedImage
                 sprintf('%s', $column->getLetter(). $rowIndex + 1),
                 $height,
                 // $style ? $writer->formatStyle($style): null
-            );
+            )->insertImage($rowIndex,  $columnIndex, $localPath);
     }
 
     /**
