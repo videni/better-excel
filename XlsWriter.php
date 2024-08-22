@@ -13,10 +13,20 @@ class XlsWriter
 
     public function __construct(string $filename, $options = [])
     {
-        $this->excel = new Excel($options);
+        $constMemory = $options['const_memory']?? false;
+        $defaultSheetName = $options['sheet_name']?? 'Sheet1';
+        $enableZip64 = $options['enable_zip64']?? false;
 
-        // the fileName must set ahead
-        $this->excel->fileName($filename);
+        $this->excel = new Excel([
+            // path is required, but here just simply let the Excel class complains
+            'path' => $options['path']?? null,
+        ]);
+
+        if ($constMemory) {
+            $this->excel->constMemory($filename, $defaultSheetName, (bool)$enableZip64);
+        } else {
+            $this->excel->fileName($filename, $defaultSheetName);
+        }
     }
 
     public function writeHeader(array $columns)

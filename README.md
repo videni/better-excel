@@ -10,6 +10,7 @@ Export data to Excel quickly, simply, naturally!
     - [图片](#图片)
     - [日期](#日期)
   - [行的渲染](#行的渲染)
+- [固定内存模式](#固定内存模式)
 - [已知局限性](#已知局限性)
 - [测试](#测试)
 
@@ -228,6 +229,20 @@ new SpecialRow([ 'id' => 1, 'name' => 'Jane', 'born_at' => Date::fromTimeStamp(t
 [ 'id' => 2, 'name' => 'John', 'born_at' => Date::fromCarbon(Carbon::now())];
 ]
 ```
+
+# 固定内存模式
+
+可以通过下列方法开启Excel 的[导出 - 固定内存模式](https://xlswriter-docs.viest.me/zh-cn/nei-cun/gu-ding-nei-cun-mo-shi
+)
+
+```
+$betterExcel = new BetterExcel($list(), [
+    'path' => __DIR__,
+    'const_memory' => true
+    'enable_zip64' => false
+]);
+```
+
 # 已知局限性
 
 -   未支持多个 sheet。
