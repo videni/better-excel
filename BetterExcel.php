@@ -108,9 +108,9 @@ class BetterExcel
                 $row = $row->render($writer, $rowIndex, $this->header);
             }
 
-            $data = $this->transformRow($row, $rowIndex);
+            $oneRow = $this->transformRow($row, $rowIndex);
 
-            $writer->writeOneRow($data);
+            $writer->writeOneRow($oneRow);
 
             $rowIndex++;
         }
