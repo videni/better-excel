@@ -3,6 +3,8 @@
 # 在const meomory 下, insertDate, insertText 会有内存泄露的问题。
 # 执行下面的程序，你可以用top命令，观察到内存持续增长。
 
+# I also created a issue [here](https://github.com/jmcnamara/libxlsxwriter/issues/453)
+
 $config = ['path' => __DIR__];
 
 $excel = new \Vtiful\Kernel\Excel($config);
