@@ -42,6 +42,9 @@ class XlsWriter
         $mappings = array_combine(array_slice($columnsLetters, 0, $columnsCount), $columns);
 
         foreach ($mappings as $letter => $column) {
+            /**
+             * @var \Modules\BetterExcel\Column $column
+             */
             $column->setLetter($letter);
             // Set style for the whole column, for example, "A:A" is for the whole column A,
             $range = sprintf('%1$s:%1$s', $letter);

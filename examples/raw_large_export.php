@@ -1,9 +1,8 @@
 <?php
 
-# 在const meomory 下, insertDate, insertText 会有内存泄露的问题。
-# 执行下面的程序，你可以用top命令，观察到内存持续增长。
+// A demo to show memory usage for using raw excel API.
 
-# I also created a issue [here](https://github.com/jmcnamara/libxlsxwriter/issues/453)
+use Vtiful\Kernel\Format;
 
 $config = ['path' => __DIR__];
 
@@ -15,9 +14,11 @@ $excel->constMemory($filename);
 
 $excel->header(['id', 'first_name', 'last_name', 'born_at']);
 
-echo "my pid-".getmypid();
+echo "my pid-". getmypid().PHP_EOL;
 
-sleep(3);
+echo "I will sleep for 5 seconds...";
+
+// sleep(10);
 
 $list = function() {
     for ($i = 1; $i <= 1000000; $i++) {
@@ -25,19 +26,34 @@ $list = function() {
     }
 };
 
+$handle = $excel->getHandle();
+
+$format = new Format($handle);
+$format->italic()
+    ->underline(Format::UNDERLINE_SINGLE)
+    ->align(Format::FORMAT_ALIGN_CENTER, Format::FORMAT_ALIGN_VERTICAL_CENTER);
+
+echo "Current memory usage: " . memory_get_usage(true)/1000/1000 . "MB\n";
+
 foreach($list() as $row) {
     $currentRow = $excel->getCurrentLine();
 
     $excel->insertDate(
         $currentRow,
         3,
-        $row[3]
+        $row[3],
+        null,
+        $format->toResource(),
     );
-    $row[3] = null;
 
     $excel->data([$row]);
 }
 
+echo "Current memory usage: " . memory_get_usage(true)/1000/1000 . "MB\n";
+
 $excel->output();
+
+echo "I will sleep for 10 seconds...";
+sleep(15);
 
 echo "Excel file with 1 million rows created successfully!\n";

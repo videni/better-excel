@@ -26,22 +26,32 @@ class Date
     public function __construct($value, $format = null, Style $style = null)
     {
         $this->value = $value;
-        $this->format = $format ?? 'yyyy-m-d hh:mm:ss';
-        $this->style = $style ?? (new Style())->align();
+        $this->format = $format;
+        $this->style = $style;
     }
 
     public function render($writer, CellInfo $info): void
     {
         Assert::isInstanceOf($writer, XlsWriter::class);
 
-        $style = $this->style ?? $info->style;
+        $column = $info->column;
+
+        // 如果当前 cell 有设置 style ，则优先使用它。
+        $formattedStyle = $this->style?->getFormattedStyle();
+        if ($this->style && !$formattedStyle) {
+            $formattedStyle = $writer->formatStyle($this->style);
+        }
+        // 否则， 使用 header 设置的样式。
+        else {
+            $formattedStyle = $column->getStyle()?->getFormattedStyle();
+        }
 
         $writer->insertDate(
             $info->rowIndex,
             $info->columnIndex,
             $this->value,
             $this->format,
-            $style ? $writer->formatStyle($style): null
+            $formattedStyle
         );
     }
 

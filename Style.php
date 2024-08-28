@@ -10,6 +10,10 @@ use PhpOption\Some;
  * This class allows you to set styles for Excel cells quickly and easily.
  *
  * It is a simple wrapper around the \Vtiful\Kernel\Format class
+ *
+ * 为什么不直接使用Vtiful\Kernel\Format? 因为，
+ * 1.不让 BetterExcel不依赖于特定的 xlswriter
+ * 2. 可以用数组的形式创建 style。
  */
 class Style
 {
@@ -216,7 +220,11 @@ class Style
 
     public function apply(\Closure $callback)
     {
-        return $callback($this->formats);
+        // 将格式化处理后的 style 缓存起来，避免同一个 style 每次重新
+        // format, 这在 php-ext-xlswriter 会是严重的性能问题。
+        $this->formattedStyle = $callback($this->formats);
+
+        return $this->formattedStyle;
     }
 
     /**
@@ -346,5 +354,20 @@ class Style
        $data = data_get($formats, $path, $default);
 
        return $data instanceof None ? $data : Some::create($data);
+    }
+
+    private $formattedStyle;
+
+
+    public function getFormattedStyle()
+    {
+        return $this->formattedStyle;
+    }
+
+    public function setFormattedStyle($formattedStyle): self
+    {
+        $this->formattedStyle = $formattedStyle;
+
+        return $this;
     }
 }
