@@ -16,13 +16,17 @@ $excel->header(['id', 'first_name', 'last_name', 'born_at']);
 
 echo "my pid-". getmypid().PHP_EOL;
 
-echo "I will sleep for 5 seconds...";
+// echo "I will sleep for 5 seconds...";
 
 // sleep(10);
 
 $list = function() {
     for ($i = 1; $i <= 1000000; $i++) {
-        yield [$i,  'Jane', 'Doe', time()];
+        yield array_merge([$i,  'Jane', 'Doe', time()], array_reduce(range(5, 180), function($carry, $key) {
+            $carry[] = time();
+
+            return $carry;
+        }));
     }
 };
 
@@ -38,13 +42,17 @@ echo "Current memory usage: " . memory_get_usage(true)/1000/1000 . "MB\n";
 foreach($list() as $row) {
     $currentRow = $excel->getCurrentLine();
 
-    $excel->insertDate(
-        $currentRow,
-        3,
-        $row[3],
-        null,
-        $format->toResource(),
-    );
+    $dates = array_splice($row, 4, 180, array_fill(0, 176, null) );
+
+    foreach($dates as $date) {
+        $excel->insertDate(
+            $currentRow,
+            3,
+            $date,
+            null,
+            $format->toResource(),
+        );
+    }
 
     $excel->data([$row]);
 }
