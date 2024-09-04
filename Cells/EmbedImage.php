@@ -114,7 +114,7 @@ class EmbedImage
      */
     public function downloadImageToTmpDir($imgUrl)
     {
-        $tempPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . basename($imgUrl);
+        $tempPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . md5($imgUrl);
         if (file_exists($tempPath)) {
             return $tempPath;
         }
