@@ -21,8 +21,6 @@ class EmbedImage
     {
         $this->imagick = new \Imagick();
 
-        $this->excelImageProcessor = new ExcelImageProcessor();
-
         if (is_callable($path)) {
             $path->bindTo($this);
         }
@@ -55,11 +53,6 @@ class EmbedImage
 
             try {
                 $localPath = $self->downloadImageToTmpDir($imgUrl);
-                //不支持的图片格式，直接返回。
-                $extension = $self->guessFileExtension($localPath);
-                if ($extension == "unknown") {
-                    return;
-                }
                 // XlsWriter仅支持 png, jpg, 所以需要转换。
                 // If the image is not proper format,  then convert it to PNG.
                 $localPath = $self->convertToPNGFormatLocally($localPath, self::DEFAULT_IMAGE_SIZE);
@@ -156,22 +149,5 @@ class EmbedImage
         $imagick->destroy();
 
         return $outputFile;
-    }
-
-    public function guessFileExtension($realPath)
-    {
-        $finfo = new \finfo(FILEINFO_MIME_TYPE);
-        $mimeType = $finfo->file($realPath);
-
-        $mimeToExtensionMap = [
-            'image/jpeg' => 'jpg',
-            'image/png' => 'png',
-            'image/gif' => 'gif',
-            'image/webp' => 'webp',
-            'image/bmp' => 'bmp',
-            'image/svg+xml' => 'svg'
-        ];
-
-        return $mimeToExtensionMap[$mimeType]?? 'unknown';
     }
 }
