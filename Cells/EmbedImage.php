@@ -137,6 +137,8 @@ class EmbedImage
 
         $imagick->readImage($imagePath);
 
+        // Convert and resize
+        //@TODO: php-ext-xlswriter 支持嵌入图片时，resize 可以移除掉。
         $imagick->resizeImage($imageSize, $imageSize, \Imagick::FILTER_LANCZOS, 1);
         $imagick->setImageFormat('png');
 
