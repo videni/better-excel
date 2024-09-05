@@ -48,7 +48,9 @@ class EmbedImage
                 $imgUrl,
                 $title ?? "View original image",
                 null,
-                $writer->formatStyle((new Style())->align('center', 'bottom'))
+                // Warning: 如果每个 cell 都设置一次样式， 会消耗极大的内存，注意不要这样去设置样式。
+                // 我保留下面注释的代码是为了提醒你。其它类似的用法也一样。
+                // $writer->formatStyle((new Style())->align('center', 'bottom'))
             );
 
             try {
