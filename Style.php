@@ -221,7 +221,7 @@ class Style
     public function apply(\Closure $callback)
     {
         // 将格式化处理后的 style 缓存起来，避免同一个 style 每次重新
-        // format, 这在 php-ext-xlswriter 会是严重的性能问题。
+        // format, 这在php-ext-xlswriter 会是严重的性能问题。
         $this->formattedStyle = $callback($this->formats);
 
         return $this->formattedStyle;

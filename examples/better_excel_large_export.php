@@ -11,7 +11,7 @@ use Modules\BetterExcel\Style;
 use Modules\BetterExcel\Cells\Date;
 
 $list = function() {
-    foreach(range(1, 2) as $i) {
+    foreach(range(1, 1000000) as $i) {
         yield [ 'id' => $i, 'first_name' => 'Jane', 'last_name' => 'Doe', 'born_at' => Date::fromTimeStamp(time())]
             + array_reduce(range(5, 180), function($carry, $key) {
                 $carry['born_at'.$key-4] = Date::fromTimeStamp(time());

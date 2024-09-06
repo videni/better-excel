@@ -5,10 +5,9 @@ namespace Modules\BetterExcel\Cells;
 use Modules\BetterExcel\CellInfo;
 use Modules\BetterExcel\XlsWriter;
 use Modules\BetterExcel\Style;
-use Webmozart\Assert\Assert;
 use GuzzleHttp\Client;
 
-class EmbedImage
+class EmbedImage extends BaseCell
 {
     public const DEFAULT_IMAGE_SIZE = 100;
 
@@ -26,7 +25,7 @@ class EmbedImage
         }
 
         $this->path = $path;
-        $this->style = $style ?? (new Style())->align('left', 'bottom');
+        $this->style = $style;
         $this->imageSize = $imageSize ?? self::DEFAULT_IMAGE_SIZE;
     }
 
@@ -41,16 +40,16 @@ class EmbedImage
      */
     public static function fromUrl(string $imgUrl, $imageSize = null, Style $style =null, $title = null)
     {
-        $callback = function(EmbedImage $self, $writer, $rowIndex, $columnIndex) use($imgUrl, $title) {
+        $callback = function(EmbedImage $self, $writer,CellInfo $info) use($imgUrl, $title) {
             $writer->insertUrl(
-                $rowIndex,
-                $columnIndex,
+                $info->rowIndex,
+                $info->columnIndex,
                 $imgUrl,
                 $title ?? "View original image",
                 null,
                 // Warning: 如果每个 cell 都设置一次样式， 会消耗极大的内存，注意不要这样去设置样式。
                 // 我保留下面注释的代码是为了提醒你。其它类似的用法也一样。
-                // $writer->formatStyle((new Style())->align('center', 'bottom'))
+                $self->getFormattedStyle($writer, $info)
             );
 
             try {
@@ -84,11 +83,9 @@ class EmbedImage
 
     public function render(XlsWriter $writer, CellInfo $info): void
     {
-        Assert::isInstanceOf($writer, XlsWriter::class);
-
         $localPath = $this->path;
         if (\is_callable($localPath)) {
-            $localPath =  $localPath($this, $writer, $info->rowIndex, $info->columnIndex);
+            $localPath =  $localPath($this, $writer, $info);
         }
         if ($localPath === null || file_exists($localPath) === false) {
             return;

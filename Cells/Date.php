@@ -9,7 +9,7 @@ use Modules\BetterExcel\Style;
 use Webmozart\Assert\Assert;
 use Modules\BetterExcel\XlsWriter;
 
-class Date
+class Date extends BaseCell
 {
     protected $value;
 
@@ -18,10 +18,6 @@ class Date
      */
     protected $format;
 
-    /**
-     * @var Style
-     */
-    protected $style;
 
     public function __construct($value, $format = null, Style $style = null)
     {
@@ -30,28 +26,16 @@ class Date
         $this->style = $style;
     }
 
-    public function render($writer, CellInfo $info): void
+    public function render(XlsWriter $writer, CellInfo $info): void
     {
         Assert::isInstanceOf($writer, XlsWriter::class);
-
-        $column = $info->column;
-
-        // 如果当前 cell 有设置 style ，则优先使用它。
-        $formattedStyle = $this->style?->getFormattedStyle();
-        if ($this->style && !$formattedStyle) {
-            $formattedStyle = $writer->formatStyle($this->style);
-        }
-        // 否则， 使用 header 设置的样式。
-        else {
-            $formattedStyle = $column->getStyle()?->getFormattedStyle();
-        }
 
         $writer->insertDate(
             $info->rowIndex,
             $info->columnIndex,
             $this->value,
             $this->format,
-            $formattedStyle
+            $this->getFormattedStyle($writer, $info)
         );
     }
 

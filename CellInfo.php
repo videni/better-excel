@@ -18,12 +18,6 @@ class CellInfo
      */
     public $columnLetter;
 
-    /**
-     *
-     * @var Column
-     */
-    public $column;
-
     public static function create($resolvedValue, $columnIndex, $rowIndex, Style $style = null, $columnLetter = null)
     {
         $self = new CellInfo();
