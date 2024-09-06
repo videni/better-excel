@@ -28,10 +28,11 @@ abstract class BaseCell
     public function getFormattedStyle(XlsWriter $writer, CellInfo $info)
     {
         // 如果当前 cell 有设置 style ，则优先使用它。
-        if ($this->style) {
-            $formattedStyle = $this->style?->getFormattedStyle();
+        $style = $this->style;
+        if ($style) {
+            $formattedStyle = $style->getFormattedStyle();
 
-            return $formattedStyle ?: $writer->formatStyle($this->style);
+            return $formattedStyle ?: $writer->formatStyle($style);
         }
 
         // 否则，使用 header 设置的样式。
