@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use Carbon\CarbonTimeZone;
 use Videni\BetterExcel\CellInfo;
 use Videni\BetterExcel\Style;
-use Webmozart\Assert\Assert;
 use Videni\BetterExcel\XlsWriter;
 
 class Date extends BaseCell
@@ -28,8 +27,6 @@ class Date extends BaseCell
 
     public function render(XlsWriter $writer, CellInfo $info): void
     {
-        Assert::isInstanceOf($writer, XlsWriter::class);
-
         $writer->insertDate(
             $info->rowIndex,
             $info->columnIndex,

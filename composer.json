@@ -9,7 +9,8 @@
         "illuminate/support": "*",
         "phpoption/phpoption": "^1.9",
         "ext-xlswriter": "^1.5.7",
-        "webmozart/assert": "^1.11"
+        "webmozart/assert": "^1.11",
+        "nesbot/carbon": "^3.0"
     },
     "require-dev": {
         "phpspec/phpspec": "^7.5"
