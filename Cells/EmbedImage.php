@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\BetterExcel\Cells;
+namespace Videni\BetterExcel\Cells;
 
-use Modules\BetterExcel\CellInfo;
-use Modules\BetterExcel\XlsWriter;
-use Modules\BetterExcel\Style;
+use Videni\BetterExcel\CellInfo;
+use Videni\BetterExcel\XlsWriter;
+use Videni\BetterExcel\Style;
 use GuzzleHttp\Client;
 
 class EmbedImage extends BaseCell

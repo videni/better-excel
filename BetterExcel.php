@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\BetterExcel;
+namespace Videni\BetterExcel;
 
 use Generator;
 use Illuminate\Support\Enumerable;

@@ -19,9 +19,9 @@ Export data to Excel quickly, simply, naturally!
 ```php
 <?php
 
-use Modules\BetterExcel\BetterExcel;
-use Modules\BetterExcel\Style;
-use Modules\BetterExcel\Cells\Date;
+use Videni\BetterExcel\BetterExcel;
+use Videni\BetterExcel\Style;
+use Videni\BetterExcel\Cells\Date;
 use Carbon\Carbon;
 
 // 1. 定义表格头
@@ -167,7 +167,7 @@ Style::fromArray(
 (new Style())->bold()->underline()->font('red', 12)->align('center'),
 ```
 
-所有的可用方法，请参考`Modules\BetterExcel\Style`, 这个类只是[PHP-Xlswriter
+所有的可用方法，请参考`Videni\BetterExcel\Style`, 这个类只是[PHP-Xlswriter
 样式列表](https://xlswriter-docs.viest.me/zh-cn/yang-shi-lie-biao)的简单封装。
 
 另外，关于`颜色`，`下划线`、`对齐`，你可以在`Modules/BetterExcel/XlsWriterFormatConstantsTrait.php`快速找到所有预定义的选项。
@@ -180,7 +180,7 @@ Style::fromArray(
 
 ### 图片
 
-在数据中，返回`Modules\BetterExcel\Cells\EmbedImage` 对象即可。
+在数据中，返回`Videni\BetterExcel\Cells\EmbedImage` 对象即可。
 
 ```php
 
@@ -190,7 +190,7 @@ Style::fromArray(
 
 ### 日期
 
-在数据中，返回`Modules\BetterExcel\Cells\Date` 对象即可。
+在数据中，返回`Videni\BetterExcel\Cells\Date` 对象即可。
 
 ```php
 [ 'id' => 1, 'name' => 'Jane', 'born_at' => Date::fromTimeStamp(time())];

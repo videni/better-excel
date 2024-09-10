@@ -1,10 +1,10 @@
 <?php
 
-namespace spec\Modules\BetterExcel;
+namespace spec\Videni\BetterExcel;
 
-use Modules\BetterExcel\BetterExcel;
-use Modules\BetterExcel\Style;
-use Modules\BetterExcel\Cells\Date;
+use Videni\BetterExcel\BetterExcel;
+use Videni\BetterExcel\Style;
+use Videni\BetterExcel\Cells\Date;
 use PhpSpec\ObjectBehavior;
 use Carbon\Carbon;
 

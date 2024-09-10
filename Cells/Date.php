@@ -1,13 +1,13 @@
 <?php
 
-namespace Modules\BetterExcel\Cells;
+namespace Videni\BetterExcel\Cells;
 
 use Carbon\Carbon;
 use Carbon\CarbonTimeZone;
-use Modules\BetterExcel\CellInfo;
-use Modules\BetterExcel\Style;
+use Videni\BetterExcel\CellInfo;
+use Videni\BetterExcel\Style;
 use Webmozart\Assert\Assert;
-use Modules\BetterExcel\XlsWriter;
+use Videni\BetterExcel\XlsWriter;
 
 class Date extends BaseCell
 {

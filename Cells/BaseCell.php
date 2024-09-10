@@ -1,9 +1,9 @@
 <?php
-namespace Modules\BetterExcel\Cells;
+namespace Videni\BetterExcel\Cells;
 
-use Modules\BetterExcel\CellInfo;
-use Modules\BetterExcel\Style;
-use Modules\BetterExcel\XlsWriter;
+use Videni\BetterExcel\CellInfo;
+use Videni\BetterExcel\Style;
+use Videni\BetterExcel\XlsWriter;
 
 abstract class BaseCell
 {

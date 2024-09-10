@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\BetterExcel;
+namespace Videni\BetterExcel;
 
 use Vtiful\Kernel\Excel;
 use Vtiful\Kernel\Format;
@@ -43,7 +43,7 @@ class XlsWriter
 
         foreach ($mappings as $letter => $column) {
             /**
-             * @var \Modules\BetterExcel\Column $column
+             * @var \Videni\BetterExcel\Column $column
              */
             $column->setLetter($letter);
             // Set style for the whole column, for example, "A:A" is for the whole column A,

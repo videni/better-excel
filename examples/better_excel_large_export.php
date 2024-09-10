@@ -6,9 +6,9 @@
 
 require_once __DIR__.'/../../../vendor/autoload.php';
 
-use Modules\BetterExcel\BetterExcel;
-use Modules\BetterExcel\Style;
-use Modules\BetterExcel\Cells\Date;
+use Videni\BetterExcel\BetterExcel;
+use Videni\BetterExcel\Style;
+use Videni\BetterExcel\Cells\Date;
 
 $list = function() {
     foreach(range(1, 1000000) as $i) {

@@ -8,7 +8,7 @@
         "php": "^7.4|^8.0",
         "illuminate/support": "*",
         "phpoption/phpoption": "^1.9",
-        "ext-xlswriter": "*",
+        "ext-xlswriter": "^1.5.7",
         "webmozart/assert": "^1.11"
     },
     "require-dev": {
@@ -16,7 +16,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Modules\\BetterExcel\\": "Modules/BetterExcel/"
+            "Videni\\BetterExcel\\": ""
         },
         "files": [
             "helpers.php"
