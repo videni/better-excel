@@ -12,8 +12,7 @@ use PhpOption\Some;
  * It is a simple wrapper around the \Vtiful\Kernel\Format class
  *
  * 为什么不直接使用Vtiful\Kernel\Format? 因为，
- * 1.不让 BetterExcel不依赖于特定的 xlswriter
- * 2. 可以用数组的形式创建 style。
+ * 1. 可以用数组的形式创建 style。
  */
 class Style
 {
